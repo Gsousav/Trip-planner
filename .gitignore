@@ -1,0 +1,21 @@
+# VSCode      
+./.vscode
+
+# Node
+node_modules
+
+# Yarn
+yarn.lock
+
+# NPM
+npm-debug.log
+npm-debug.log.json
+
+# Bun
+bun.lockb
+
+# PNPM
+pnpm-lock.yaml
+
+# Cargo
+cargo-lock.toml
