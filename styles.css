@@ -50,22 +50,22 @@ body {
     gap: 8px;
     justify-content: center;
     padding: 8px;
-    background: rgba(242, 242, 247, 0.6); /* Translucent background */
-    backdrop-filter: blur(20px); /* iOS-style blur */
+    background: rgba(242, 242, 247, 0.6);
+    backdrop-filter: blur(20px);
     border-radius: 12px;
     margin: 12px 0;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
-    border: 1px solid rgba(0, 0, 0, 0.08); /* Subtle border for depth */
+    border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .tab {
     -webkit-appearance: none;
     appearance: none;
     padding: 10px 20px;
-    min-height: 44px; /* iOS minimum tap target */
-    min-width: 80px; /* Ensure enough width for text */
+    min-height: 44px;
+    min-width: 80px;
     background: transparent;
     border-radius: 10px;
     border: none;
@@ -73,7 +73,7 @@ body {
     font-size: 16px;
     font-weight: 600;
     color: #1d1d1f;
-    letter-spacing: -0.022em; /* Matches Apple's SF font kerning */
+    letter-spacing: -0.022em;
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
     transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
@@ -83,23 +83,23 @@ body {
 }
 
 .tab:hover {
-    background: rgba(0, 0, 0, 0.04); /* Subtle hover effect */
+    background: rgba(0, 0, 0, 0.04);
 }
 
 .tab:active {
-    transform: scale(0.98); /* Slight press effect */
+    transform: scale(0.95);
 }
 
 .tab:focus-visible {
-    outline: 2px solid #007aff; /* iOS blue for accessibility */
+    outline: 2px solid #007aff;
     outline-offset: 2px;
 }
 
 .tab.active {
-    background: #ffffff; /* White fill for active tab */
+    background: #ffffff;
     color: #1d1d1f;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1); /* Subtle shadow for depth */
-    font-weight: 700; /* Bolder for active state */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    font-weight: 700;
 }
 
 /* Tab Content */
@@ -133,16 +133,17 @@ body {
 
 /* Cards */
 .card {
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 14px 16px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+    background: rgba(255, 255, 255, 0.9); /* Translucent background */
+    backdrop-filter: blur(10px); /* iOS-style blur */
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Refined shadow */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .card:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
 }
 
 .card h3 {
@@ -184,9 +185,11 @@ body {
 
 /* Boarding Pass Layout */
 .boarding {
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 250, 250, 0.95) 100%); /* Translucent gradient */
+    backdrop-filter: blur(10px); /* iOS-style blur */
     border-radius: 16px;
-    padding: 14px 16px;
-    background: linear-gradient(180deg, #ffffff 0%, #fafafa 100%);
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     position: relative;
     overflow: hidden;
 }
@@ -198,7 +201,7 @@ body {
     top: 12px;
     width: 48px;
     height: 48px;
-    background: radial-gradient(circle at center, rgba(79,70,229,0.18), transparent 60%);
+    background: radial-gradient(circle at center, rgba(79, 70, 229, 0.12), transparent 60%); /* Subtler gradient */
     border-radius: 50%;
 }
 
@@ -250,6 +253,19 @@ body {
     color: #6e6e73;
 }
 
+.layover-highlight {
+    color: #ff9500;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.layover-highlight::before {
+    content: '⏱️';
+    font-size: 12px;
+}
+
 .pass-actions {
     display: flex;
     gap: 10px;
@@ -267,7 +283,7 @@ body {
 }
 
 .link-btn:hover {
-    background: #4338ca; /* indigo-700 */
+    background: #4338ca;
 }
 
 /* Small circular icon buttons (maps) */
@@ -343,10 +359,12 @@ body {
 
 /* Playing card style */
 .itinerary-card.playing {
+    background: rgba(255, 255, 255, 0.9); /* Translucent background */
+    backdrop-filter: blur(10px); /* iOS-style blur */
     border-radius: 18px;
-    background: #ffffff;
-    box-shadow: 0 10px 24px rgba(0,0,0,0.08), 0 3px 8px rgba(0,0,0,0.06);
-    border: 1px solid rgba(0,0,0,0.06);
+    padding: 16px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .date-header {
@@ -480,8 +498,8 @@ body {
     width: 18px;
     height: 18px;
     border-radius: 50%;
-    background: #eef2ff; /* indigo-100 */
-    color: #3730a3; /* indigo-800 */
+    background: #eef2ff;
+    color: #3730a3;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: .02em;
@@ -613,32 +631,32 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    background: transparent; /* No background to show PNG transparency */
-    overflow: hidden; /* Clip to circular shape */
+    background: transparent;
+    overflow: hidden;
 }
 
 .airline-chip .tiny-logo {
-    width: 36px; /* Slightly smaller to avoid edge clipping */
-    height: 36px; /* Slightly smaller to avoid edge clipping */
-    border-radius: 50%; /* Keep circular */
-    object-fit: contain; /* Show entire logo without cropping */
-    margin: 0; /* No margin */
-    background: transparent; /* No background */
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: contain;
+    margin: 0;
+    background: transparent;
 }
 
 .airline-chip .tiny-badge {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 40px; /* Match chip size */
-    height: 40px; /* Match chip size */
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
-    background: transparent; /* No background */
-    color: #3730a3; /* indigo-800 */
+    background: transparent;
+    color: #3730a3;
     font-size: 12px;
     font-weight: 700;
     letter-spacing: 0.02em;
-    line-height: 40px; /* Center text vertically */
+    line-height: 40px;
     margin: 0;
     opacity: 0;
     transform: scale(0.9);

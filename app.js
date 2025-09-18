@@ -7,6 +7,7 @@ let tripData = {
             to: 'Palma, Mallorca (PMI)',
             departure: '2025-11-04T19:30:00',
             arrival: '2025-11-04T20:50:00',
+            details: 'Economy, Airbus A321neo, I21675',
             group: 'main'
         },
         {
@@ -16,6 +17,7 @@ let tripData = {
             to: 'London Heathrow (LHR)',
             departure: '2025-11-08T14:25:00',
             arrival: '2025-11-08T15:40:00',
+            details: 'Economy, Airbus A320, BA494',
             group: 'main'
         },
         {
@@ -25,6 +27,7 @@ let tripData = {
             to: 'Amsterdam (AMS)',
             departure: '2025-11-13T15:45:00',
             arrival: '2025-11-13T18:00:00',
+            details: 'Economy, Embraer 195 E2, KL1010',
             group: 'main'
         },
         {
@@ -34,6 +37,7 @@ let tripData = {
             to: 'Madrid (MAD)',
             departure: '2025-11-01T18:10:00',
             arrival: '2025-11-02T13:05:00',
+            details: 'Economy, Airbus A340-300, PU702',
             group: 'main'
         },
         {
@@ -43,7 +47,7 @@ let tripData = {
             to: 'Houston (IAH)',
             departure: '2025-11-13T10:20:00',
             arrival: '2025-11-13T14:40:00',
-            details: 'Economy, Boeing 767, UA 21',
+            details: 'Economy, Boeing 767, UA 21, 1 hr 40 min layover in Houston',
             group: 'partial'
         },
         {
@@ -53,7 +57,7 @@ let tripData = {
             to: 'Lima (LIM)',
             departure: '2025-11-13T16:20:00',
             arrival: '2025-11-13T23:55:00',
-            details: '1 hr 40 min layover in Houston',
+            details: 'Economy, Boeing 737-800, UA 854, 1 hr 40 min layover in Houston',
             group: 'partial'
         }
     ],
@@ -310,6 +314,10 @@ function renderFlights() {
         const toCc = getCountryCodeFromLocation(flight.to);
         const fromFlag = getFlagUrl(fromCc);
         const toFlag = getFlagUrl(toCc);
+        // Highlight layover in details
+        const detailsHtml = flight.details
+            ? flight.details.replace(/(,\s*[^,]+layover[^,]+)/, '<span class="layover-highlight">$1</span>')
+            : '';
         flightDiv.innerHTML = `
             <div class="pass-header">
                 <div class="pass-title">
@@ -321,7 +329,7 @@ function renderFlights() {
                 </div>
                 <div class="pass-subtitle">
                     <span class="airline-chip" role="img" aria-label="${flight.airline}">
-                        ${airlineLogo ? `<img class=\"tiny-logo\" src=\"${airlineLogo}\" alt=\"\" referrerpolicy=\"no-referrer\" crossorigin=\"anonymous\" onerror=\"this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');\" />` : ''}
+                        ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
                         <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
                     </span>
                 </div>
@@ -330,7 +338,7 @@ function renderFlights() {
                 <div class="chip">${formatDateTimeShort(flight.departure)}</div>
                 <div class="chip">${formatDateTimeShort(flight.arrival)}</div>
             </div>
-            ${flight.details ? `<div class="pass-footer">${flight.details}</div>` : ''}
+            ${detailsHtml ? `<div class="pass-footer">${detailsHtml}</div>` : ''}
         `;
         flightDiv.addEventListener('click', () => {
             const city = getCityFromFlight(flight);
@@ -354,6 +362,10 @@ function renderFlights() {
             const toCc = getCountryCodeFromLocation(flight.to);
             const fromFlag = getFlagUrl(fromCc);
             const toFlag = getFlagUrl(toCc);
+            // Highlight layover in details
+            const detailsHtml = flight.details
+                ? flight.details.replace(/(,\s*[^,]+layover[^,]+)/, '<span class="layover-highlight">$1</span>')
+                : '';
             flightDiv.innerHTML = `
             <div class="pass-header">
                     <div class="pass-title">
@@ -365,7 +377,7 @@ function renderFlights() {
                     </div>
                 <div class="pass-subtitle">
                     <span class="airline-chip" role="img" aria-label="${flight.airline}">
-                        ${airlineLogo ? `<img class=\"tiny-logo\" src=\"${airlineLogo}\" alt=\"\" referrerpolicy=\"no-referrer\" crossorigin=\"anonymous\" onerror=\"this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');\" />` : ''}
+                        ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
                         <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
                     </span>
                 </div>
@@ -374,7 +386,7 @@ function renderFlights() {
                     <div class="chip">${formatDateTimeShort(flight.departure)}</div>
                     <div class="chip">${formatDateTimeShort(flight.arrival)}</div>
                 </div>
-                ${flight.details ? `<div class="pass-footer">${flight.details}</div>` : ''}
+                ${detailsHtml ? `<div class="pass-footer">${detailsHtml}</div>` : ''}
             `;
             flightDiv.addEventListener('click', () => {
                 const city = getCityFromFlight(flight);
@@ -412,8 +424,8 @@ function renderHotels() {
             </div>
             <div class="pass-footer address">${hotel.address}</div>
             <div class="pass-actions">
-                ${mapsLink ? `<a class=\"icon-btn\" href=\"${mapsLink}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Open in Apple Maps\"><img src=\"appleMaps.png\" alt=\"\" class=\"icon-img\"></a>` : ''}
-                ${gmapsLink ? `<a class=\"icon-btn\" href=\"${gmapsLink}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Open in Google Maps\"><img src=\"googleMaps.png\" alt=\"\" class=\"icon-img\"></a>` : ''}
+                ${mapsLink ? `<a class="icon-btn" href="${mapsLink}" target="_blank" rel="noopener" aria-label="Open in Apple Maps"><img src="appleMaps.png" alt="" class="icon-img"></a>` : ''}
+                ${gmapsLink ? `<a class="icon-btn" href="${gmapsLink}" target="_blank" rel="noopener" aria-label="Open in Google Maps"><img src="googleMaps.png" alt="" class="icon-img"></a>` : ''}
             </div>
         `;
         hotelDiv.addEventListener('click', () => {
@@ -446,7 +458,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const guessName = hashCity.replace(/-/g, ' ');
         focusItineraryCity(guessName);
     }
-
 });
 
 function renderItinerary() {
