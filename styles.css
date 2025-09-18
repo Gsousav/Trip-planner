@@ -24,26 +24,6 @@ body {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
 }
 
-/* Header */
-.header {
-    text-align: center;
-    padding-bottom: 24px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-.header h1 {
-    font-size: 26px;
-    font-weight: 600;
-    color: #1d1d1f;
-    margin-bottom: 6px;
-}
-
-.header p {
-    font-size: 14px;
-    color: #6e6e73;
-    font-weight: 400;
-}
-
 /* Tabs (Apple-style segmented control) */
 .tabs {
     display: flex;
@@ -53,11 +33,14 @@ body {
     background: rgba(242, 242, 247, 0.6);
     backdrop-filter: blur(20px);
     border-radius: 12px;
-    margin: 12px 0;
+    margin: 0 0 12px 0;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scroll-snap-type: x mandatory;
     border: 1px solid rgba(0, 0, 0, 0.08);
+    position: sticky;
+    top: max(0px, env(safe-area-inset-top));
+    z-index: 10;
 }
 
 .tab {
@@ -528,18 +511,6 @@ body {
     .container {
         padding: 12px;
         margin: 8px;
-    }
-
-    .header {
-        padding-bottom: 16px;
-    }
-
-    .header h1 {
-        font-size: 22px;
-    }
-
-    .header p {
-        font-size: 13px;
     }
 
     .tabs {
