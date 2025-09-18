@@ -375,18 +375,12 @@ function renderItinerary(tripData) {
     const itineraryList = document.getElementById('itineraryList');
     if (!itineraryList) return;
 
-    const placeholders = [
-        { city: 'Madrid', dates: 'Nov 2 – Nov 4', notes: 'Arrival, explore city center, tapas.' },
-        { city: 'Mallorca', dates: 'Nov 4 – Nov 8', notes: 'Beach day, Cala d\'Or, scenic drive.' },
-        { city: 'London', dates: 'Nov 8 – Nov 13', notes: 'Sightseeing, museums, West End show.' },
-        { city: 'Amsterdam', dates: 'Nov 13 – Nov 16', notes: 'Canal tour, bikes, museums.' }
-    ];
-
     itineraryList.innerHTML = '';
 
     const stored = (() => { try { return JSON.parse(localStorage.getItem('itineraryChecks') || '{}'); } catch (_) { return {}; } })();
 
-    placeholders.forEach(stop => {
+    // Use itinerary data from tripData.json instead of placeholders
+    (tripData.itinerary || []).forEach(stop => {
         const card = document.createElement('div');
         const citySlug = slugifyCity(stop.city);
         card.className = 'card boarding itinerary itinerary-card playing';
@@ -394,15 +388,19 @@ function renderItinerary(tripData) {
         card.id = `itinerary-${citySlug}`;
         const days = getDateRangeForCity(stop.city, tripData);
         const checksPerCity = stored[citySlug] || {};
+
         const slidesHtml = days.map((d, dayIdx) => {
-            const labels = ['Morning activity', 'Afternoon activity', 'Evening activity'];
+            const dayData = stop.days.find(day => day.date === d.toISOString().split('T')[0]) || { activities: [] };
+            const activities = dayData.activities || [];
+            const labels = ['mañana', 'tarde', 'noche'];
             const checkedIdxs = Array.isArray(checksPerCity[dayIdx]) ? checksPerCity[dayIdx] : [];
             const list = labels.map((label, i) => {
+                const activity = activities.find(act => act.period.toLowerCase() === label) || { description: `Actividad de ${label}` };
                 const isChecked = checkedIdxs.includes(i);
                 return `
                 <div class="check-item${isChecked ? ' checked' : ''}" data-idx="${i}" role="listitem" tabindex="0">
                     <span class="check-indicator">${isChecked ? '✓' : ''}</span>
-                    <span class="check-label">${label}</span>
+                    <span class="check-label">${activity.description}</span>
                 </div>`;
             }).join('');
             return `
@@ -422,10 +420,10 @@ function renderItinerary(tripData) {
         card.innerHTML = `
             <div class="pass-header">
                 <div class="pass-title">${stop.city}</div>
-                <div class="pass-subtitle">Itinerary</div>
+                <div class="pass-subtitle">Itinerario</div>
             </div>
             <div class="pass-row">
-                <div class="chip"><span class="label">Dates</span> ${stop.dates}</div>
+                <div class="chip"><span class="label">Fechas</span> ${stop.dates}</div>
             </div>
             <div class="slides" data-index="0">
                 <div class="slides-track">
@@ -434,8 +432,8 @@ function renderItinerary(tripData) {
             </div>
             <div class="slide-dots">${dotsHtml}</div>
             <div class="slide-nav">
-                <button class="nav-btn prev" type="button">Prev</button>
-                <button class="nav-btn next" type="button">Next</button>
+                <button class="nav-btn prev" type="button">Anterior</button>
+                <button class="nav-btn next" type="button">Siguiente</button>
             </div>
         `;
 

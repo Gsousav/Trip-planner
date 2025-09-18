@@ -98,5 +98,337 @@
             "checkout": "2025-11-16T12:00:00",
             "url": "https://www.xo-hotels.com/en/hotels/xo-hotels-park-west/"
         }
+    ],
+    "itinerary": [
+        {
+            "city": "Madrid",
+            "dates": "Nov 2 – Nov 4",
+            "days": [
+                {
+                    "date": "2025-11-02",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Vuelo desde Lima y llegada al aeropuerto de Madrid-Barajas a las 13:05."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Check-in en el Airbnb en Calle de las Infantas a las 14:00 y exploración del barrio de Chueca, incluyendo una visita a la Puerta del Sol."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Paseo por la Gran Vía, admirando las luces y tiendas, seguido de una cena ligera de tapas en un bar local."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-03",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Visita al Parque del Retiro: paseo en barca por el estanque, visita al Palacio de Cristal y la Puerta de Alcalá."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Exploración del Madrid de los Austrias: Plaza Mayor, Mercado de San Miguel y Catedral de la Almudena."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Cena en Casa Lucio a las 20:00 para probar los famosos huevos estrellados, en Cava Baja 35."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-04",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Visita al Palacio Real de Madrid y sus jardines."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Paseo por el Barrio de las Letras, visitando la casa de Cervantes y comprando souvenirs."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Traslado al aeropuerto para el vuelo a Mallorca a las 19:30, llegada a las 20:50."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "city": "Mallorca",
+            "dates": "Nov 4 – Nov 8",
+            "days": [
+                {
+                    "date": "2025-11-04",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Tiempo en Madrid antes del vuelo."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Vuelo desde Madrid a Mallorca, salida a las 19:30, llegada a las 20:50."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Check-in en el Airbnb en Cala d'Or a las 21:30 y cena relajada en el puerto deportivo."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-05",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Relajación en la playa de Cala Gran o Cala Esmeralda."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Visita al Parque Natural de Mondragó para senderismo y observación de aves."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Cena en un restaurante local con mariscos frescos."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-06",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Excursión en barco por las calas cercanas."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Juego de golf en Vall d'Or Golf o relax en la playa."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Atardecer en Es Fortí y cena en el puerto."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-07",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Visita a las Cuevas del Drach en Porto Cristo."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Paseo en bicicleta por Cala d'Or y compras en boutiques locales."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Cena temática mallorquina con sobrasada y ensaimada."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-08",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Mañana libre para disfrutar de la playa o piscina."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Check-out y traslado al aeropuerto para el vuelo a Londres a las 14:25, llegada a las 15:40."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Check-in en el alojamiento en Londres y paseo por Piccadilly Circus."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "city": "London",
+            "dates": "Nov 8 – Nov 13",
+            "days": [
+                {
+                    "date": "2025-11-08",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Tiempo en Mallorca antes del vuelo."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Vuelo desde Mallorca a Londres, salida a las 14:25, llegada a las 15:40."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Check-in en el alojamiento y paseo por Piccadilly Circus."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-09",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Visita al Palacio de Buckingham y cambio de guardia (si aplica)."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Tour en Warner Bros. Studio - The Making of Harry Potter al mediodía."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Cena en Soho y exploración de la vida nocturna."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-10",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Visita al British Museum."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Paseo por Covent Garden y mercado."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Espectáculo en el West End."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-11",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Torre de Londres y Puente de la Torre."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Subida al London Eye para vistas panorámicas."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Paseo nocturno por el Támesis."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-12",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Relajación en Hyde Park."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Compras en Oxford Street y Regent Street."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Cena en un pub tradicional británico."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-13",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Visita al Mercado de Camden."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Traslado al aeropuerto para el vuelo a Amsterdam a las 15:45, llegada a las 18:00."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Check-in en el XO Park West Hotel y paseo por los canales cercanos."
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "city": "Amsterdam",
+            "dates": "Nov 13 – Nov 16",
+            "days": [
+                {
+                    "date": "2025-11-13",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Tiempo en Londres antes del vuelo."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Vuelo desde Londres a Amsterdam, salida a las 15:45, llegada a las 18:00."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Check-in en el XO Park West Hotel y paseo por los canales cercanos."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-14",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Visita al Rijksmuseum para ver obras maestras como La Ronda de Noche."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Museo Van Gogh y exploración de Museumplein."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Paseo por el Barrio Rojo y cena ligera."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-15",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Ceremonia de graduación."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Tiempo libre para celebrar o visitar Vondelpark."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Cena para 7 personas en Ceppi's Amsterdam, restaurante italiano en Lijnbaansgracht 256."
+                        }
+                    ]
+                },
+                {
+                    "date": "2025-11-16",
+                    "activities": [
+                        {
+                            "period": "mañana",
+                            "description": "Crucero por los canales de Amsterdam."
+                        },
+                        {
+                            "period": "tarde",
+                            "description": "Visita a la Casa de Ana Frank y check-out del hotel."
+                        },
+                        {
+                            "period": "noche",
+                            "description": "Tiempo libre antes de la salida o extensión del viaje."
+                        }
+                    ]
+                }
+            ]
+        }
     ]
 }
