@@ -75,7 +75,10 @@ function getDateRangeForCity(cityName, tripData) {
         if (name.includes('amsterdam')) return hname.includes('amsterdam') || addr.includes('amsterdam');
         return false;
     });
-    if (matchIndex === -1) return [];
+    if (matchIndex === -1) {
+        console.warn(`No hotel found for city: ${cityName}`);
+        return [];
+    }
 
     const current = hotelsSorted[matchIndex];
     const next = hotelsSorted[matchIndex + 1] || null;
@@ -84,17 +87,17 @@ function getDateRangeForCity(cityName, tripData) {
     const candidateEnds = [];
     if (current.checkout) candidateEnds.push(toStartOfDay((current.checkout).includes('T') ? current.checkout : current.checkout + 'T00:00:00'));
     if (next && next.checkin) candidateEnds.push(toStartOfDay((next.checkin).includes('T') ? next.checkin : next.checkin + 'T00:00:00'));
-    if (candidateEnds.length === 0) return [];
+    if (candidateEnds.length === 0) {
+        console.warn(`No valid end date for ${cityName}`);
+        return [];
+    }
     const endExclusive = new Date(Math.min(...candidateEnds.map(d => d.getTime())));
 
     const days = [];
     const d = new Date(start);
-    while (d < endExclusive) {
+    while (d <= endExclusive) {
         days.push(new Date(d));
         d.setDate(d.getDate() + 1);
-    }
-    if (days.length > 0) {
-        days.push(new Date(endExclusive));
     }
     return days;
 }
@@ -203,8 +206,9 @@ function updateHash({ tab, city }) {
 }
 
 function toggleTheme() {
+    if (window.innerWidth <= 768) return; // Disable theme toggle on mobile
     const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
+    const currentTheme = html.getAttribute('data-theme') || 'system';
     const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     let nextTheme;
 
@@ -222,6 +226,7 @@ function toggleTheme() {
 }
 
 function updateThemeIcon(theme) {
+    if (window.innerWidth <= 768) return; // Skip icon update on mobile
     const icon = document.querySelector('.theme-icon');
     if (!icon) return;
     if (theme === 'dark') {
@@ -373,13 +378,15 @@ function renderHotels(tripData) {
 
 function renderItinerary(tripData) {
     const itineraryList = document.getElementById('itineraryList');
-    if (!itineraryList) return;
+    if (!itineraryList) {
+        console.error('itineraryList element not found');
+        return;
+    }
 
     itineraryList.innerHTML = '';
 
     const stored = (() => { try { return JSON.parse(localStorage.getItem('itineraryChecks') || '{}'); } catch (_) { return {}; } })();
 
-    // Use itinerary data from tripData.json instead of placeholders
     (tripData.itinerary || []).forEach(stop => {
         const card = document.createElement('div');
         const citySlug = slugifyCity(stop.city);
@@ -390,17 +397,23 @@ function renderItinerary(tripData) {
         const checksPerCity = stored[citySlug] || {};
 
         const slidesHtml = days.map((d, dayIdx) => {
-            const dayData = stop.days.find(day => day.date === d.toISOString().split('T')[0]) || { activities: [] };
+            // Normalize date to YYYY-MM-DD for comparison
+            const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+            const dayData = stop.days.find(day => day.date === dateStr) || { activities: [] };
             const activities = dayData.activities || [];
             const labels = ['mañana', 'tarde', 'noche'];
             const checkedIdxs = Array.isArray(checksPerCity[dayIdx]) ? checksPerCity[dayIdx] : [];
             const list = labels.map((label, i) => {
-                const activity = activities.find(act => act.period.toLowerCase() === label) || { description: `Actividad de ${label}` };
+                const activity = activities.find(act => act.period.trim().toLowerCase() === label);
+                if (!activity) {
+                    console.warn(`No activity found for ${label} on ${dateStr} in ${stop.city}`);
+                }
+                const description = activity ? activity.description : `Actividad de ${label}`;
                 const isChecked = checkedIdxs.includes(i);
                 return `
                 <div class="check-item${isChecked ? ' checked' : ''}" data-idx="${i}" role="listitem" tabindex="0">
                     <span class="check-indicator">${isChecked ? '✓' : ''}</span>
-                    <span class="check-label">${activity.description}</span>
+                    <span class="check-label">${description}</span>
                 </div>`;
             }).join('');
             return `
@@ -493,6 +506,12 @@ function renderItinerary(tripData) {
                     current[citySlug] = cityObj;
                     try { localStorage.setItem('itineraryChecks', JSON.stringify(current)); } catch (_) {}
                 });
+                row.addEventListener('keydown', e => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        row.click();
+                    }
+                });
             });
         });
 
@@ -506,17 +525,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     let savedTheme = null;
     try { savedTheme = localStorage.getItem('theme'); } catch (_) {}
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    const initialTheme = savedTheme && savedTheme !== 'system' ? savedTheme : 'system';
+    const initialTheme = window.innerWidth <= 768 ? 'light' : (savedTheme && savedTheme !== 'system' ? savedTheme : 'system');
     html.setAttribute('data-theme', initialTheme);
     updateThemeIcon(initialTheme === 'system' ? systemTheme : initialTheme);
 
-    document.querySelector('.theme-toggle').addEventListener('click', toggleTheme);
-
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (html.getAttriabute('data-theme') === 'system') {
-            updateThemeIcon(e.matches ? 'dark' : 'light');
-        }
-    });
+    if (window.innerWidth > 768) {
+        document.querySelector('.theme-toggle')?.addEventListener('click', toggleTheme);
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (html.getAttribute('data-theme') === 'system') {
+                updateThemeIcon(e.matches ? 'dark' : 'light');
+            }
+        });
+    }
 
     const tripData = await loadTripData();
     renderFlights(tripData);
