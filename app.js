@@ -310,9 +310,10 @@ function renderFlights() {
                     <span class="route-text">${flight.to}</span>
                 </div>
                 <div class="pass-subtitle">
-                    ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="${flight.airline} logo" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
-                    <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
-                    <span>${flight.airline}</span>
+                    <span class="airline-chip" role="img" aria-label="${flight.airline}">
+                        ${airlineLogo ? `<img class=\"tiny-logo\" src=\"${airlineLogo}\" alt=\"\" referrerpolicy=\"no-referrer\" crossorigin=\"anonymous\" onerror=\"this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');\" />` : ''}
+                        <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
+                    </span>
                 </div>
             </div>
             <div class="pass-row">
@@ -344,7 +345,7 @@ function renderFlights() {
             const fromFlag = getFlagUrl(fromCc);
             const toFlag = getFlagUrl(toCc);
             flightDiv.innerHTML = `
-                <div class="pass-header">
+            <div class="pass-header">
                     <div class="pass-title">
                         ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
                         <span class="route-text">${flight.from}</span>
@@ -352,11 +353,12 @@ function renderFlights() {
                         ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
                         <span class="route-text">${flight.to}</span>
                     </div>
-                    <div class="pass-subtitle">
-                        ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="${flight.airline} logo" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
+                <div class="pass-subtitle">
+                    <span class="airline-chip" role="img" aria-label="${flight.airline}">
+                        ${airlineLogo ? `<img class=\"tiny-logo\" src=\"${airlineLogo}\" alt=\"\" referrerpolicy=\"no-referrer\" crossorigin=\"anonymous\" onerror=\"this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');\" />` : ''}
                         <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
-                        <span>${flight.airline}</span>
-                    </div>
+                    </span>
+                </div>
                 </div>
                 <div class="pass-row">
                     <div class="chip"><span class="label">Dep</span> ${formatDateTime(flight.departure)}</div>

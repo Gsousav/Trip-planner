@@ -535,4 +535,60 @@ body {
     .partial-group-label {
         font-size: 13px;
     }
+
+    /* Flights: mobile alignment fixes */
+    .pass-header {
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .pass-title {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        row-gap: 6px;
+        column-gap: 6px;
+    }
+
+    .pass-subtitle {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .pass-title .route-text {
+        white-space: normal;
+    }
+
+    .pass-title .arrow {
+        margin: 0 4px;
+    }
+
+    .tiny-logo, .tiny-flag {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+        vertical-align: 0;
+    }
+}
+
+/* Airline chip (button-like) */
+.airline-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    background: #eef2ff; /* indigo-100 */
+    color: #3730a3; /* indigo-800 */
+    box-shadow: inset 0 0 0 1px rgba(55,48,163,0.18);
+}
+
+.airline-chip .tiny-logo {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
+    background: #fff;
 }
