@@ -294,6 +294,88 @@ body {
     text-decoration: line-through;
 }
 
+/* Playing card style */
+.itinerary-card.playing {
+    border-radius: 18px;
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.08), 0 3px 8px rgba(0,0,0,0.06);
+    border: 1px solid rgba(0,0,0,0.06);
+}
+
+.date-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin: 6px 0 10px 0;
+}
+
+.date-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1d1d1f;
+}
+
+.date-subtitle {
+    font-size: 13px;
+    color: #6e6e73;
+}
+
+/* Slides */
+.slides {
+    position: relative;
+    overflow: hidden;
+}
+
+.slides-track {
+    display: flex;
+    transition: transform 0.25s ease-out;
+    will-change: transform;
+}
+
+.slide {
+    min-width: 100%;
+    padding: 2px 0 0 0;
+}
+
+.slide-dots {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 10px;
+}
+
+.slide-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e5e5ea;
+}
+
+.slide-dot.active {
+    background: #007aff;
+}
+
+.slide-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+}
+
+.nav-btn {
+    padding: 8px 12px;
+    background: #f5f5f7;
+    border-radius: 10px;
+    border: none;
+    font-size: 14px;
+    color: #1d1d1f;
+    cursor: pointer;
+}
+
+.nav-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
 /* Partial Group Section */
 .partial-group {
     margin-top: 24px;

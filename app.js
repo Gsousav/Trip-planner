@@ -122,6 +122,58 @@ function formatDate(dateStr) {
     });
 }
 
+function formatDayShort(dateObj) {
+    if (!(dateObj instanceof Date)) return '';
+    return dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
+}
+
+function toStartOfDay(dateLike) {
+    const d = new Date(dateLike);
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+}
+
+function getDateRangeForCity(cityName) {
+    const name = (cityName || '').toLowerCase();
+    const hotelsSorted = [...tripData.hotels]
+        .filter(h => h.checkin)
+        .sort((a, b) => new Date(a.checkin).getTime() - new Date(b.checkin).getTime());
+
+    const matchIndex = hotelsSorted.findIndex(h => {
+        const hname = (h.hotelName || '').toLowerCase();
+        const addr = (h.address || '').toLowerCase();
+        if (name.includes('madrid')) return hname.includes('madrid');
+        if (name.includes('mallorca')) return hname.includes('cala') || addr.includes('mallorca');
+        if (name.includes('london')) return hname.includes('london');
+        if (name.includes('amsterdam')) return hname.includes('amsterdam') || addr.includes('amsterdam');
+        return false;
+    });
+    if (matchIndex === -1) return [];
+
+    const current = hotelsSorted[matchIndex];
+    const next = hotelsSorted[matchIndex + 1] || null;
+
+    // Start at the beginning of check-in day
+    const start = toStartOfDay((current.checkin || '').includes('T') ? current.checkin : (current.checkin || '') + 'T00:00:00');
+    // End is the earlier of next.checkin or current.checkout (both exclusive), normalized to start of that day
+    const candidateEnds = [];
+    if (current.checkout) candidateEnds.push(toStartOfDay((current.checkout).includes('T') ? current.checkout : current.checkout + 'T00:00:00'));
+    if (next && next.checkin) candidateEnds.push(toStartOfDay((next.checkin).includes('T') ? next.checkin : next.checkin + 'T00:00:00'));
+    if (candidateEnds.length === 0) return [];
+    const endExclusive = new Date(Math.min(...candidateEnds.map(d => d.getTime())));
+
+    const days = [];
+    const d = new Date(start);
+    while (d < endExclusive) {
+        days.push(new Date(d));
+        d.setDate(d.getDate() + 1);
+    }
+    // Include the departure day as an extra itinerary card (end day)
+    if (days.length > 0) {
+        days.push(new Date(endExclusive));
+    }
+    return days;
+}
+
 function switchTab(tabId) {
     document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
@@ -333,10 +385,37 @@ function renderItinerary() {
     placeholders.forEach(stop => {
         const card = document.createElement('div');
         const citySlug = slugifyCity(stop.city);
-        card.className = 'card boarding itinerary itinerary-card';
+        card.className = 'card boarding itinerary itinerary-card playing';
         card.setAttribute('data-city', citySlug);
         card.id = `itinerary-${citySlug}`;
-        const checks = stored[citySlug] || [];
+        const days = getDateRangeForCity(stop.city);
+        const checksPerCity = stored[citySlug] || {};
+        // Build slides markup
+        const slidesHtml = days.map((d, dayIdx) => {
+            const labels = ['Morning activity', 'Afternoon activity', 'Evening activity'];
+            const checkedIdxs = Array.isArray(checksPerCity[dayIdx]) ? checksPerCity[dayIdx] : [];
+            const list = labels.map((label, i) => {
+                const isChecked = checkedIdxs.includes(i);
+                return `
+                <div class="check-item${isChecked ? ' checked' : ''}" data-idx="${i}" role="listitem" tabindex="0">
+                    <span class="check-indicator">${isChecked ? '✓' : ''}</span>
+                    <span class="check-label">${label}</span>
+                </div>`;
+            }).join('');
+            return `
+            <div class="slide" data-day="${dayIdx}">
+                <div class="date-header">
+                    <div class="date-title">${formatDayShort(d)}</div>
+                    <div class="date-subtitle">${stop.city}</div>
+                </div>
+                <div class="checklist" role="list">
+                    ${list}
+                </div>
+            </div>`;
+        }).join('');
+
+        const dotsHtml = days.map((_, i) => `<span class="slide-dot${i === 0 ? ' active' : ''}" data-dot="${i}"></span>`).join('');
+
         card.innerHTML = `
             <div class="pass-header">
                 <div class="pass-title">${stop.city}</div>
@@ -345,35 +424,82 @@ function renderItinerary() {
             <div class="pass-row">
                 <div class="chip"><span class="label">Dates</span> ${stop.dates}</div>
             </div>
-            <div class="pass-footer">${stop.notes}</div>
-            <div class="checklist" role="list">
-                ${['Top sights', 'Local food', 'Photos spot'].map((label, i) => {
-                    const isChecked = checks.includes(i);
-                    return `
-                    <div class="check-item${isChecked ? ' checked' : ''}" data-idx="${i}" role="listitem" tabindex="0">
-                        <span class="check-indicator">${isChecked ? '✓' : ''}</span>
-                        <span class="check-label">${label}</span>
-                    </div>`;
-                }).join('')}
+            <div class="slides" data-index="0">
+                <div class="slides-track">
+                    ${slidesHtml || ''}
+                </div>
+            </div>
+            <div class="slide-dots">${dotsHtml}</div>
+            <div class="slide-nav">
+                <button class="nav-btn prev" type="button">Prev</button>
+                <button class="nav-btn next" type="button">Next</button>
             </div>
         `;
-        // Toggle handling
-        card.querySelectorAll('.check-item').forEach(row => {
-            row.addEventListener('click', () => {
-                const idx = Number(row.getAttribute('data-idx'));
-                row.classList.toggle('checked');
-                const indicator = row.querySelector('.check-indicator');
-                const nowChecked = row.classList.contains('checked');
-                indicator.textContent = nowChecked ? '✓' : '';
-                const current = (() => { try { return JSON.parse(localStorage.getItem('itineraryChecks') || '{}'); } catch (_) { return {}; } })();
-                const cityArr = Array.isArray(current[citySlug]) ? current[citySlug] : [];
-                const pos = cityArr.indexOf(idx);
-                if (nowChecked && pos === -1) cityArr.push(idx);
-                if (!nowChecked && pos !== -1) cityArr.splice(pos, 1);
-                current[citySlug] = cityArr;
-                try { localStorage.setItem('itineraryChecks', JSON.stringify(current)); } catch (_) {}
+
+        // Nav and swipe behavior
+        const slidesEl = card.querySelector('.slides');
+        const trackEl = card.querySelector('.slides-track');
+        const dotsEl = card.querySelectorAll('.slide-dot');
+        const prevBtn = card.querySelector('.nav-btn.prev');
+        const nextBtn = card.querySelector('.nav-btn.next');
+        const total = Math.max(days.length, 1);
+        function update(index) {
+            const clamped = Math.max(0, Math.min(index, total - 1));
+            slidesEl.setAttribute('data-index', String(clamped));
+            trackEl.style.transform = `translateX(-${clamped * 100}%)`;
+            dotsEl.forEach((d, i) => d.classList.toggle('active', i === clamped));
+            prevBtn.disabled = clamped === 0;
+            nextBtn.disabled = clamped === total - 1;
+        }
+        prevBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) - 1));
+        nextBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) + 1));
+        dotsEl.forEach(dot => dot.addEventListener('click', () => update(Number(dot.getAttribute('data-dot')))));
+
+        // Touch swipe
+        let startX = 0; let deltaX = 0; let dragging = false;
+        slidesEl.addEventListener('touchstart', (e) => {
+            if (!e.touches || !e.touches[0]) return;
+            dragging = true; startX = e.touches[0].clientX; deltaX = 0;
+        }, { passive: true });
+        slidesEl.addEventListener('touchmove', (e) => {
+            if (!dragging || !e.touches || !e.touches[0]) return;
+            deltaX = e.touches[0].clientX - startX;
+        }, { passive: true });
+        slidesEl.addEventListener('touchend', () => {
+            if (!dragging) return; dragging = false;
+            const width = slidesEl.clientWidth || 1;
+            const threshold = width * 0.18;
+            const current = Number(slidesEl.getAttribute('data-index'));
+            if (deltaX < -threshold) update(current + 1);
+            else if (deltaX > threshold) update(current - 1);
+            deltaX = 0;
+        });
+
+        // Checklist toggle per day persistence
+        card.querySelectorAll('.slide').forEach(slide => {
+            const dayIdx = Number(slide.getAttribute('data-day'));
+            slide.querySelectorAll('.check-item').forEach(row => {
+                row.addEventListener('click', () => {
+                    const idx = Number(row.getAttribute('data-idx'));
+                    row.classList.toggle('checked');
+                    const indicator = row.querySelector('.check-indicator');
+                    const nowChecked = row.classList.contains('checked');
+                    indicator.textContent = nowChecked ? '✓' : '';
+                    const current = (() => { try { return JSON.parse(localStorage.getItem('itineraryChecks') || '{}'); } catch (_) { return {}; } })();
+                    const cityObj = current[citySlug] && typeof current[citySlug] === 'object' ? current[citySlug] : {};
+                    const dayArr = Array.isArray(cityObj[dayIdx]) ? cityObj[dayIdx] : [];
+                    const pos = dayArr.indexOf(idx);
+                    if (nowChecked && pos === -1) dayArr.push(idx);
+                    if (!nowChecked && pos !== -1) dayArr.splice(pos, 1);
+                    cityObj[dayIdx] = dayArr;
+                    current[citySlug] = cityObj;
+                    try { localStorage.setItem('itineraryChecks', JSON.stringify(current)); } catch (_) {}
+                });
             });
         });
+
+        // Initialize
+        update(0);
         itineraryList.appendChild(card);
     });
 }
