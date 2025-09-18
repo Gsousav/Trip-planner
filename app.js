@@ -231,6 +231,46 @@ function createGoogleMapsLink(address) {
     return `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
 
+// Map helpers for UI icons
+function getAirlineLogoUrl(airlineName) {
+    const key = (airlineName || '').toLowerCase();
+    // Prefer local assets when available
+    if (key.includes('iberia')) return 'iberia.png';
+    if (key.includes('british airways')) return 'british.png';
+    if (key.includes('klm')) return 'klm.png';
+    if (key.includes('plusultra') || key.includes('plus ultra')) return 'plusUltra.png';
+    if (key.includes('american airlines') || key.includes('american')) return 'americanAirlines.png';
+    if (key.includes('united')) return 'unitedAirlines.png';
+    // Fallback to external or none for others
+    return '';
+}
+
+function getCountryCodeFromLocation(locationStr) {
+    const name = (locationStr || '').toLowerCase();
+    // Simple city-to-country mapping for this itinerary
+    if (name.includes('madrid')) return 'es';
+    if (name.includes('mallorca') || name.includes('palma')) return 'es';
+    if (name.includes('london')) return 'gb';
+    if (name.includes('amsterdam')) return 'nl';
+    if (name.includes('houston')) return 'us';
+    if (name.includes('lima')) return 'pe';
+    return '';
+}
+
+function getFlagUrl(cc) {
+    if (!cc) return '';
+    const code = cc.toLowerCase();
+    return `https://flagcdn.com/w20/${code}.png`;
+}
+
+function getAirlineInitials(airlineName) {
+    const s = (airlineName || '').replace(/[^A-Za-z ]/g, '').trim();
+    if (!s) return '?';
+    const parts = s.split(/\s+/);
+    if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+    return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
+}
+
 function updateHash({ tab, city }) {
     const params = new URLSearchParams(location.hash.slice(1));
     if (tab) params.set('tab', tab); else params.delete('tab');
@@ -255,10 +295,25 @@ function renderFlights() {
     mainFlights.forEach(flight => {
         const flightDiv = document.createElement('div');
         flightDiv.className = 'card boarding flight';
+        const airlineLogo = getAirlineLogoUrl(flight.airline);
+        const fromCc = getCountryCodeFromLocation(flight.from);
+        const toCc = getCountryCodeFromLocation(flight.to);
+        const fromFlag = getFlagUrl(fromCc);
+        const toFlag = getFlagUrl(toCc);
         flightDiv.innerHTML = `
             <div class="pass-header">
-                <div class="pass-title">${flight.from} → ${flight.to}</div>
-                <div class="pass-subtitle">${flight.airline}</div>
+                <div class="pass-title">
+                    ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                    <span class="route-text">${flight.from}</span>
+                    <span class="arrow">→</span>
+                    ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                    <span class="route-text">${flight.to}</span>
+                </div>
+                <div class="pass-subtitle">
+                    ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="${flight.airline} logo" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
+                    <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
+                    <span>${flight.airline}</span>
+                </div>
             </div>
             <div class="pass-row">
                 <div class="chip"><span class="label">Dep</span> ${formatDateTime(flight.departure)}</div>
@@ -283,10 +338,25 @@ function renderFlights() {
         partialFlights.forEach(flight => {
             const flightDiv = document.createElement('div');
             flightDiv.className = 'card boarding flight';
+            const airlineLogo = getAirlineLogoUrl(flight.airline);
+            const fromCc = getCountryCodeFromLocation(flight.from);
+            const toCc = getCountryCodeFromLocation(flight.to);
+            const fromFlag = getFlagUrl(fromCc);
+            const toFlag = getFlagUrl(toCc);
             flightDiv.innerHTML = `
                 <div class="pass-header">
-                    <div class="pass-title">${flight.from} → ${flight.to}</div>
-                    <div class="pass-subtitle">${flight.airline}</div>
+                    <div class="pass-title">
+                        ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                        <span class="route-text">${flight.from}</span>
+                        <span class="arrow">→</span>
+                        ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                        <span class="route-text">${flight.to}</span>
+                    </div>
+                    <div class="pass-subtitle">
+                        ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="${flight.airline} logo" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
+                        <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
+                        <span>${flight.airline}</span>
+                    </div>
                 </div>
                 <div class="pass-row">
                     <div class="chip"><span class="label">Dep</span> ${formatDateTime(flight.departure)}</div>
