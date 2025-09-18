@@ -1,0 +1,102 @@
+{
+    "flights": [
+        {
+            "id": 1,
+            "airline": "Iberia",
+            "from": "Madrid",
+            "to": "Mallorca",
+            "departure": "2025-11-04T19:30:00",
+            "arrival": "2025-11-04T20:50:00",
+            "details": "Economy, Airbus A321neo, I21675",
+            "group": "main"
+        },
+        {
+            "id": 2,
+            "airline": "British Airways",
+            "from": "Mallorca",
+            "to": "London (LHR)",
+            "departure": "2025-11-08T14:25:00",
+            "arrival": "2025-11-08T15:40:00",
+            "details": "Economy, Airbus A320, BA494",
+            "group": "main"
+        },
+        {
+            "id": 3,
+            "airline": "KLM",
+            "from": "London (LHR)",
+            "to": "Amsterdam",
+            "departure": "2025-11-13T15:45:00",
+            "arrival": "2025-11-13T18:00:00",
+            "details": "Economy, Embraer 195 E2, KL1010",
+            "group": "main"
+        },
+        {
+            "id": 4,
+            "airline": "PlusUltra Airlines",
+            "from": "Lima",
+            "to": "Madrid",
+            "departure": "2025-11-01T18:10:00",
+            "arrival": "2025-11-02T13:05:00",
+            "details": "Economy, Airbus A340-300, PU702",
+            "group": "main"
+        },
+        {
+            "id": 5,
+            "airline": "United Airlines",
+            "from": "Amsterdam",
+            "to": "Houston",
+            "departure": "2025-11-13T10:20:00",
+            "arrival": "2025-11-13T14:40:00",
+            "details": "Economy, Boeing 767, UA 21, 1 hr 40 min layover in Houston",
+            "group": "partial"
+        },
+        {
+            "id": 6,
+            "airline": "United Airlines",
+            "from": "Houston",
+            "to": "Lima",
+            "departure": "2025-11-13T16:20:00",
+            "arrival": "2025-11-13T23:55:00",
+            "details": "Economy, Boeing 737-800, UA 854, 1 hr 40 min layover in Houston",
+            "group": "partial"
+        }
+    ],
+    "hotels": [
+        {
+            "id": 1,
+            "hotelName": "Madrid",
+            "type": "Airbnb",
+            "address": "Calle de las Infantas, 34, Madrid",
+            "checkin": "2025-11-02T14:00:00",
+            "checkout": "2025-11-04T12:00:00",
+            "url": "https://www.airbnb.com/rooms/placeholder-madrid"
+        },
+        {
+            "id": 2,
+            "hotelName": "Cala d'Or",
+            "type": "Airbnb",
+            "address": "Carrer de sa Vinya, 10, Cala d'Or, Mallorca",
+            "checkin": "2025-11-04T15:00:00",
+            "checkout": "2025-11-08T10:00:00",
+            "url": "https://www.airbnb.com/rooms/placeholder-mallorca"
+        },
+        {
+            "id": 3,
+            "hotelName": "London Stay",
+            "type": "Not defined",
+            "address": "Not defined",
+            "checkin": "2025-11-08",
+            "checkout": "2025-11-13",
+            "url": ""
+        },
+        {
+            "id": 4,
+            "hotelName": "XO Park West Hotel",
+            "type": "Hotel",
+            "address": "Molenwerf 1, 1014 AG Amsterdam",
+            "checkin": "2025-11-13T14:00:00",
+            "checkout": "2025-11-16T12:00:00",
+            "url": "https://www.xo-hotels.com/en/hotels/xo-hotels-park-west/"
+        }
+    ]
+}

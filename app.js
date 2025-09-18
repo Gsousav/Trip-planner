@@ -1,105 +1,19 @@
-let tripData = {
-    flights: [
-        {
-            id: 1,
-            airline: 'Iberia',
-            from: 'Madrid (MAD)',
-            to: 'Palma, Mallorca (PMI)',
-            departure: '2025-11-04T19:30:00',
-            arrival: '2025-11-04T20:50:00',
-            details: 'Economy, Airbus A321neo, I21675',
-            group: 'main'
-        },
-        {
-            id: 2,
-            airline: 'British Airways',
-            from: 'Palma, Mallorca (PMI)',
-            to: 'London Heathrow (LHR)',
-            departure: '2025-11-08T14:25:00',
-            arrival: '2025-11-08T15:40:00',
-            details: 'Economy, Airbus A320, BA494',
-            group: 'main'
-        },
-        {
-            id: 3,
-            airline: 'KLM',
-            from: 'London Heathrow (LHR)',
-            to: 'Amsterdam (AMS)',
-            departure: '2025-11-13T15:45:00',
-            arrival: '2025-11-13T18:00:00',
-            details: 'Economy, Embraer 195 E2, KL1010',
-            group: 'main'
-        },
-        {
-            id: 4,
-            airline: 'PlusUltra Airlines',
-            from: 'Lima (LIM)',
-            to: 'Madrid (MAD)',
-            departure: '2025-11-01T18:10:00',
-            arrival: '2025-11-02T13:05:00',
-            details: 'Economy, Airbus A340-300, PU702',
-            group: 'main'
-        },
-        {
-            id: 5,
-            airline: 'United Airlines',
-            from: 'Amsterdam (AMS)',
-            to: 'Houston (IAH)',
-            departure: '2025-11-13T10:20:00',
-            arrival: '2025-11-13T14:40:00',
-            details: 'Economy, Boeing 767, UA 21, 1 hr 40 min layover in Houston',
-            group: 'partial'
-        },
-        {
-            id: 6,
-            airline: 'United Airlines',
-            from: 'Houston (IAH)',
-            to: 'Lima (LIM)',
-            departure: '2025-11-13T16:20:00',
-            arrival: '2025-11-13T23:55:00',
-            details: 'Economy, Boeing 737-800, UA 854, 1 hr 40 min layover in Houston',
-            group: 'partial'
-        }
-    ],
-    hotels: [
-        {
-            id: 1,
-            hotelName: 'Madrid',
-            type: 'Airbnb',
-            address: 'Calle de las Infantas, 34, Madrid',
-            checkin: '2025-11-02T14:00:00',
-            checkout: '2025-11-04T12:00:00',
-            url: 'https://www.airbnb.com/rooms/placeholder-madrid'
-        },
-        {
-            id: 2,
-            hotelName: 'Cala d\'Or',
-            type: 'Airbnb',
-            address: 'Carrer de sa Vinya, 10, Cala d\'Or, Mallorca',
-            checkin: '2025-11-04T15:00:00',
-            checkout: '2025-11-08T10:00:00',
-            url: 'https://www.airbnb.com/rooms/placeholder-mallorca'
-        },
-        {
-            id: 3,
-            hotelName: 'London Stay',
-            type: 'Not defined',
-            address: 'Not defined',
-            checkin: '2025-11-08',
-            checkout: '2025-11-13',
-            url: ''
-        },
-        {
-            id: 4,
-            hotelName: 'XO Park West Hotel',
-            type: 'Hotel',
-            address: 'Molenwerf 1, 1014 AG Amsterdam',
-            checkin: '2025-11-13T14:00:00',
-            checkout: '2025-11-16T12:00:00',
-            url: 'https://www.xo-hotels.com/en/hotels/xo-hotels-park-west/'
-        }
-    ]
-};
+async function loadTripData() {
+    try {
+        const response = await fetch('tripData.json');
+        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+        return await response.json();
+    } catch (error) {
+        console.error('Failed to load tripData.json:', error);
+        const flightsList = document.getElementById('flightsList');
+        const hotelsList = document.getElementById('hotelsList');
+        const itineraryList = document.getElementById('itineraryList');
+        if (flightsList) flightsList.innerHTML = '<div class="empty-state"><h3>Error loading flight data</h3></div>';
+        if (hotelsList) hotelsList.innerHTML = '<div class="empty-state"><h3>Error loading hotel data</h3></div>';
+        if (itineraryList) itineraryList.innerHTML = '<div class="empty-state"><h3>Error loading itinerary data</h3></div>';
+        return { flights: [], hotels: [] };
+    }
+}
 
 function formatDateTime(dateTimeStr) {
     if (!dateTimeStr) return 'Not defined';
@@ -146,7 +60,7 @@ function toStartOfDay(dateLike) {
     return new Date(d.getFullYear(), d.getMonth(), d.getDate());
 }
 
-function getDateRangeForCity(cityName) {
+function getDateRangeForCity(cityName, tripData) {
     const name = (cityName || '').toLowerCase();
     const hotelsSorted = [...tripData.hotels]
         .filter(h => h.checkin)
@@ -295,7 +209,7 @@ function updateHash({ tab, city }) {
     }
 }
 
-function renderFlights() {
+function renderFlights(tripData) {
     const flightsList = document.getElementById('flightsList');
     flightsList.innerHTML = '';
     
@@ -399,7 +313,7 @@ function renderFlights() {
     }
 }
 
-function renderHotels() {
+function renderHotels(tripData) {
     const hotelsList = document.getElementById('hotelsList');
     hotelsList.innerHTML = '';
     
@@ -437,30 +351,7 @@ function renderHotels() {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    renderFlights();
-    renderHotels();
-    renderItinerary();
-    
-    // Add event listeners for tabs
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-    });
-    // Restore from hash or storage
-    const params = new URLSearchParams(location.hash.slice(1));
-    const hashTab = params.get('tab');
-    const hashCity = params.get('city');
-    let savedTab = null;
-    try { savedTab = localStorage.getItem('activeTab'); } catch (_) {}
-    const initialTab = hashTab || savedTab || 'flights';
-    if (initialTab !== 'flights') switchTab(initialTab);
-    if (hashTab === 'itinerary' && hashCity) {
-        const guessName = hashCity.replace(/-/g, ' ');
-        focusItineraryCity(guessName);
-    }
-});
-
-function renderItinerary() {
+function renderItinerary(tripData) {
     const itineraryList = document.getElementById('itineraryList');
     if (!itineraryList) return;
 
@@ -481,7 +372,7 @@ function renderItinerary() {
         card.className = 'card boarding itinerary itinerary-card playing';
         card.setAttribute('data-city', citySlug);
         card.id = `itinerary-${citySlug}`;
-        const days = getDateRangeForCity(stop.city);
+        const days = getDateRangeForCity(stop.city, tripData);
         const checksPerCity = stored[citySlug] || {};
         // Build slides markup
         const slidesHtml = days.map((d, dayIdx) => {
@@ -596,3 +487,27 @@ function renderItinerary() {
         itineraryList.appendChild(card);
     });
 }
+
+document.addEventListener('DOMContentLoaded', async () => {
+    const tripData = await loadTripData();
+    renderFlights(tripData);
+    renderHotels(tripData);
+    renderItinerary(tripData);
+    
+    // Add event listeners for tabs
+    document.querySelectorAll('.tab').forEach(tab => {
+        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
+    });
+    // Restore from hash or storage
+    const params = new URLSearchParams(location.hash.slice(1));
+    const hashTab = params.get('tab');
+    const hashCity = params.get('city');
+    let savedTab = null;
+    try { savedTab = localStorage.getItem('activeTab'); } catch (_) {}
+    const initialTab = hashTab || savedTab || 'flights';
+    if (initialTab !== 'flights') switchTab(initialTab);
+    if (hashTab === 'itinerary' && hashCity) {
+        const guessName = hashCity.replace(/-/g, ' ');
+        focusItineraryCity(guessName);
+    }
+});
