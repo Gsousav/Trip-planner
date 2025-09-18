@@ -111,6 +111,16 @@ function formatDateTime(dateTimeStr) {
     });
 }
 
+function formatDateTimeShort(dateTimeStr) {
+    if (!dateTimeStr) return 'Not defined';
+    const date = new Date(dateTimeStr);
+    const weekday = date.toLocaleString('en-GB', { weekday: 'short' });
+    const day = date.toLocaleString('en-GB', { day: '2-digit' });
+    const month = date.toLocaleString('en-GB', { month: 'short' });
+    const time = date.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+    return `${weekday}, ${day} ${month}, ${time}`;
+}
+
 function formatDate(dateStr) {
     if (!dateStr) return 'Not defined';
     const date = new Date(dateStr);
@@ -317,8 +327,8 @@ function renderFlights() {
                 </div>
             </div>
             <div class="pass-row">
-                <div class="chip"><span class="label">Dep</span> ${formatDateTime(flight.departure)}</div>
-                <div class="chip"><span class="label">Arr</span> ${formatDateTime(flight.arrival)}</div>
+                <div class="chip">${formatDateTimeShort(flight.departure)}</div>
+                <div class="chip">${formatDateTimeShort(flight.arrival)}</div>
             </div>
             ${flight.details ? `<div class="pass-footer">${flight.details}</div>` : ''}
         `;
@@ -361,8 +371,8 @@ function renderFlights() {
                 </div>
                 </div>
                 <div class="pass-row">
-                    <div class="chip"><span class="label">Dep</span> ${formatDateTime(flight.departure)}</div>
-                    <div class="chip"><span class="label">Arr</span> ${formatDateTime(flight.arrival)}</div>
+                    <div class="chip">${formatDateTimeShort(flight.departure)}</div>
+                    <div class="chip">${formatDateTimeShort(flight.arrival)}</div>
                 </div>
                 ${flight.details ? `<div class="pass-footer">${flight.details}</div>` : ''}
             `;
