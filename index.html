@@ -1,8 +1,10 @@
+<!-- index.html -->
+
 <!DOCTYPE html>
 <html lang="en" data-theme="system">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eurotrip</title>
     <link rel="stylesheet" href="styles.css">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -10,25 +12,22 @@
 </head>
 <body>
     <div class="container">
-        <nav class="tabs">
-            <button class="tab active" data-tab="flights">Flights</button>
-            <button class="tab" data-tab="accommodation">Accommodation</button>
-            <button class="tab" data-tab="itinerary">Itinerary</button>
+        <header class="header">
             <button class="theme-toggle" aria-label="Toggle theme">
                 <span class="theme-icon">🌙</span>
             </button>
-        </nav>
+        </header>
 
         <main>
-            <section id="flights" class="tab-content active">
+            <section id="flights" class="section active">
                 <div id="flightsList" class="card-list"></div>
             </section>
 
-            <section id="accommodation" class="tab-content">
+            <section id="accommodation" class="section">
                 <div id="hotelsList" class="card-list"></div>
             </section>
 
-            <section id="itinerary" class="tab-content">
+            <section id="itinerary" class="section">
                 <div id="itineraryList" class="card-list"></div>
             </section>
         </main>

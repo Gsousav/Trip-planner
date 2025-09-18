@@ -1,3 +1,5 @@
+/* styles.css */
+
 /* Reset and Base Styles */
 * {
     margin: 0;
@@ -23,6 +25,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
+    overflow-x: hidden;
 }
 
 /* Container */
@@ -33,27 +36,15 @@ body {
     border-radius: 16px;
     padding: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    overflow-x: hidden;
 }
 
-/* Tabs (Apple-style segmented control) */
-.tabs {
+/* Header for theme toggle */
+.header {
     display: flex;
-    gap: 8px;
-    justify-content: center;
-    align-items: center;
+    justify-content: flex-end;
     padding: 8px;
-    background: rgba(242, 242, 247, 0.6);
-    backdrop-filter: blur(20px);
-    border-radius: 12px;
-    margin: 0 0 12px 0;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x mandatory;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    position: sticky;
-    top: max(0px, env(safe-area-inset-top));
-    z-index: 10;
-    transition: background-color 0.3s ease, border-color 0.3s ease;
+    margin-bottom: 12px;
 }
 
 .theme-toggle {
@@ -89,53 +80,13 @@ body {
     font-size: 20px;
 }
 
-.tab {
-    -webkit-appearance: none;
-    appearance: none;
-    padding: 10px 20px;
-    min-height: 44px;
-    min-width: 80px;
-    background: transparent;
-    border-radius: 10px;
-    border: none;
-    cursor: pointer;
-    font-size: 16px;
-    font-weight: 600;
-    color: #1d1d1f;
-    letter-spacing: -0.022em;
-    transition: background-color 0.2s ease, color 0.2s ease, transform 0.1s ease;
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    scroll-snap-align: center;
-    position: relative;
-}
-
-.tab:hover {
-    background: rgba(0, 0, 0, 0.04);
-}
-
-.tab:active {
-    transform: scale(0.95);
-}
-
-.tab:focus-visible {
-    outline: 2px solid #007aff;
-    outline-offset: 2px;
-}
-
-.tab.active {
-    background: #ffffff;
-    color: #1d1d1f;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    font-weight: 700;
-}
-
-/* Tab Content */
-.tab-content {
+/* Sections */
+.section {
     display: none;
     padding: 16px 0;
 }
 
-.tab-content.active {
+.section.active {
     display: block;
     animation: fadeIn 0.3s ease-out;
 }
@@ -171,6 +122,12 @@ body {
 .card:hover {
     transform: translateY(-4px);
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+}
+
+.card.non-clickable {
+    cursor: default !important;
+    opacity: 0.8;
+    pointer-events: none;
 }
 
 .card h3 {
@@ -325,61 +282,6 @@ body {
     width: 28px;
     height: 28px;
     object-fit: contain;
-}
-
-/* Itinerary checklist */
-.checklist {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 10px;
-}
-
-.check-item {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    padding: 14px;
-    background: #f5f5f7;
-    border-radius: 12px;
-    font-size: 16px;
-    color: #1d1d1f;
-    min-height: 48px;
-    -webkit-tap-highlight-color: rgba(0,0,0,0);
-    cursor: pointer;
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.check-item:active {
-    background: #ececf0;
-    transform: scale(0.98);
-}
-
-.check-indicator {
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    border: 2px solid #4f46e5;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex: 0 0 20px;
-    transition: background-color 0.2s ease, border-color 0.2s ease;
-}
-
-.check-item.checked .check-indicator {
-    background: #4f46e5;
-    border-color: #4f46e5;
-}
-
-.check-label {
-    flex: 1;
-    color: #1d1d1f;
-}
-
-.check-item.checked .check-label {
-    color: #6e6e73;
-    text-decoration: line-through;
 }
 
 /* Playing card style */
@@ -563,6 +465,80 @@ body {
     white-space: nowrap;
 }
 
+/* Back Button */
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #f5f5f7;
+    border-radius: 999px;
+    font-weight: 600;
+    color: #1d1d1f;
+    text-decoration: none;
+    margin-bottom: 16px;
+    transition: background 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.back-btn:hover {
+    background: #e5e5ea;
+}
+
+.back-btn:active {
+    transform: scale(0.95);
+}
+
+.back-icon {
+    font-size: 18px;
+}
+
+/* Airline chip (button-like) */
+.airline-chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    overflow: hidden;
+}
+
+.airline-chip .tiny-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    object-fit: contain;
+    margin: 0;
+    background: transparent;
+}
+
+.airline-chip .tiny-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent;
+    color: #3730a3;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 40px;
+    margin: 0;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.15s ease;
+}
+
+.airline-chip .tiny-badge.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
 /* Dark Mode (only applied on larger screens) */
 @media (prefers-color-scheme: dark) {
     html:not([data-theme="light"]) {
@@ -579,11 +555,6 @@ body {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .tabs {
-        background: rgba(44, 44, 46, 0.6);
-        border-color: rgba(255, 255, 255, 0.08);
-    }
-
     .theme-toggle {
         background: #3a3a3c;
     }
@@ -598,20 +569,6 @@ body {
 
     .theme-icon {
         color: #f5f5f7;
-    }
-
-    .tab {
-        color: #f5f5f7;
-    }
-
-    .tab:hover {
-        background: rgba(255, 255, 255, 0.08);
-    }
-
-    .tab.active {
-        background: #3a3a3c;
-        color: #f5f5f7;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     }
 
     .card {
@@ -670,33 +627,6 @@ body {
     .itinerary-card.playing {
         background: rgba(44, 44, 46, 0.9);
         border: 1px solid rgba(255, 255, 255, 0.08);
-    }
-
-    .check-item {
-        background: #3a3a3c;
-        color: #f5f5f7;
-    }
-
-    .check-item:active {
-        background: #48484a;
-        transform: scale(0.98);
-    }
-
-    .check-indicator {
-        border-color: #5e5ce6;
-    }
-
-    .check-item.checked .check-indicator {
-        background: #5e5ce6;
-        border-color: #5e5ce6;
-    }
-
-    .check-label {
-        color: #f5f5f7;
-    }
-
-    .check-item.checked .check-label {
-        color: #c7c7cc;
     }
 
     .date-title {
@@ -763,6 +693,15 @@ body {
     .card-detail.address strong {
         color: #5e5ce6;
     }
+
+    .back-btn {
+        background: #3a3a3c;
+        color: #f5f5f7;
+    }
+
+    .back-btn:hover {
+        background: #48484a;
+    }
 }
 
 /* Force Light Mode (only applied on larger screens) */
@@ -779,11 +718,6 @@ html[data-theme="light"] {
         box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
     }
 
-    .tabs {
-        background: rgba(242, 242, 247, 0.6);
-        border-color: rgba(0, 0, 0, 0.08);
-    }
-
     .theme-toggle {
         background: #f5f5f7;
     }
@@ -798,20 +732,6 @@ html[data-theme="light"] {
 
     .theme-icon {
         color: #1d1d1f;
-    }
-
-    .tab {
-        color: #1d1d1f;
-    }
-
-    .tab:hover {
-        background: rgba(0, 0, 0, 0.04);
-    }
-
-    .tab.active {
-        background: #ffffff;
-        color: #1d1d1f;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
     }
 
     .card {
@@ -870,33 +790,6 @@ html[data-theme="light"] {
         background: rgba(255, 255, 255, 0.9);
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
         border: 1px solid rgba(0, 0, 0, 0.06);
-    }
-
-    .check-item {
-        background: #f5f5f7;
-        color: #1d1d1f;
-    }
-
-    .check-item:active {
-        background: #ececf0;
-        transform: scale(0.98);
-    }
-
-    .check-indicator {
-        border-color: #4f46e5;
-    }
-
-    .check-item.checked .check-indicator {
-        background: #4f46e5;
-        border-color: #4f46e5;
-    }
-
-    .check-label {
-        color: #1d1d1f;
-    }
-
-    .check-item.checked .check-label {
-        color: #6e6e73;
     }
 
     .date-title {
@@ -963,6 +856,15 @@ html[data-theme="light"] {
     .card-detail.address strong {
         color: #4f46e5;
     }
+
+    .back-btn {
+        background: #f5f5f7;
+        color: #1d1d1f;
+    }
+
+    .back-btn:hover {
+        background: #e5e5ea;
+    }
 }
 
 /* Media Queries */
@@ -984,24 +886,9 @@ html[data-theme="light"] {
         margin: 8px;
     }
 
-    .tabs {
-        gap: 6px;
-        padding: 6px 12px;
-        justify-content: center;
-        background: rgba(242, 242, 247, 0.6);
-        border-color: rgba(0, 0, 0, 0.08);
-    }
-
     /* Hide theme toggle on mobile */
     .theme-toggle {
         display: none;
-    }
-
-    .tab {
-        font-size: 15px;
-        padding: 8px 16px;
-        min-height: 40px;
-        min-width: 70px;
     }
 
     .card {
@@ -1084,63 +971,38 @@ html[data-theme="light"] {
         gap: 20px;
     }
 
-    .check-item {
-        min-height: 48px;
-        padding: 14px;
-        font-size: 16px;
-    }
-
     .nav-btn {
         min-width: 48px;
         min-height: 48px;
         padding: 12px;
         font-size: 15px;
     }
-}
 
-/* Airline chip (button-like) */
-.airline-chip {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: transparent;
-    overflow: hidden;
-}
+    /* Make itinerary cards taller on phones */
+    .itinerary-card {
+        min-height: 480px;
+    }
 
-.airline-chip .tiny-logo {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    object-fit: contain;
-    margin: 0;
-    background: transparent;
-}
+    .activity-list {
+        min-height: 240px;
+    }
 
-.airline-chip .tiny-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: transparent;
-    color: #3730a3;
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.02em;
-    line-height: 40px;
-    margin: 0;
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity 0.15s ease;
-}
+    .slide {
+        min-height: 320px;
+    }
 
-.airline-chip .tiny-badge.show {
-    opacity: 1;
-    transform: scale(1);
+    /* Fix horizontal scroll */
+    .slides {
+        overflow-x: hidden;
+    }
+
+    .slides-track {
+        width: max-content;
+    }
+
+    .pass-footer {
+        word-break: break-all;
+    }
 }
 
 /* Existing styles from your previous version */
@@ -1189,60 +1051,6 @@ body {
     margin: 0;
     padding: 0;
     line-height: 1.5;
-}
-
-header {
-    padding: 1rem;
-    text-align: center;
-}
-
-.tab-bar {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    padding: 1rem;
-    background: var(--card-bg);
-    border-bottom: 1px solid var(--card-border);
-}
-
-.tab {
-    padding: 0.5rem 1rem;
-    cursor: pointer;
-    border-radius: 0.25rem;
-    transition: background 0.2s;
-}
-
-.tab.active {
-    background: var(--accent);
-    color: white;
-}
-
-.tab:hover:not(.active) {
-    background: var(--highlight);
-}
-
-.tab-content {
-    display: none;
-    padding: 1rem;
-}
-
-.tab-content.active {
-    display: block;
-}
-
-.card {
-    background: var(--card-bg);
-    border: 1px solid var(--card-border);
-    border-radius: 0.5rem;
-    padding: 1rem;
-    margin: 1rem auto;
-    max-width: 600px;
-    box-shadow: var(--shadow);
-}
-
-.card.boarding {
-    position: relative;
-    overflow: hidden;
 }
 
 .card.boarding.flight .pass-header::after,
@@ -1393,47 +1201,6 @@ header {
 .date-subtitle {
     font-size: 0.875rem;
     color: #666;
-}
-
-.checklist {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-}
-
-.check-item {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    cursor: pointer;
-    user-select: none;
-}
-
-.check-item:hover {
-    background: var(--highlight);
-}
-
-.check-item.checked {
-    background: var(--highlight);
-}
-
-.check-item.checked .check-label {
-    text-decoration: line-through;
-}
-
-.check-indicator {
-    width: 1rem;
-    height: 1rem;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 0.75rem;
-}
-
-.check-label {
-    flex: 1;
 }
 
 .activity-list {

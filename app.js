@@ -1,3 +1,5 @@
+// app.js
+
 async function loadTripData() {
     try {
         const response = await fetch('tripData.json');
@@ -104,16 +106,6 @@ function getDateRangeForCity(cityName, tripData) {
     return days;
 }
 
-function switchTab(tabId) {
-    document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
-    document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-    
-    document.querySelector(`.tab[data-tab="${tabId}"]`).classList.add('active');
-    document.getElementById(tabId).classList.add('active');
-    try { localStorage.setItem('activeTab', tabId); } catch (_) {}
-    updateHash({ tab: tabId });
-}
-
 function slugifyCity(name) {
     return (name || '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
@@ -135,20 +127,6 @@ function getCityFromFlight(flight) {
     if (beforeParen.toLowerCase().includes('amsterdam')) return 'Amsterdam';
     if (beforeParen.toLowerCase().includes('madrid')) return 'Madrid';
     return beforeParen || 'Itinerary';
-}
-
-function focusItineraryCity(cityName) {
-    if (!cityName) return;
-    const citySlug = slugifyCity(cityName);
-    switchTab('itinerary');
-    const card = document.querySelector(`.itinerary-card[data-city="${citySlug}"]`);
-    if (card) {
-        card.classList.add('highlight');
-        card.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        setTimeout(() => card.classList.remove('highlight'), 1600);
-    }
-    updateHash({ tab: 'itinerary', city: citySlug });
-    try { localStorage.setItem('lastCity', citySlug); } catch (_) {}
 }
 
 function createMapsLink(address) {
@@ -197,9 +175,9 @@ function getAirlineInitials(airlineName) {
     return (parts[0][0] + (parts[1] ? parts[1][0] : '')).toUpperCase();
 }
 
-function updateHash({ tab, city }) {
+function updateHash({ section, city }) {
     const params = new URLSearchParams(location.hash.slice(1));
-    if (tab) params.set('tab', tab); else params.delete('tab');
+    if (section) params.set('section', section); else params.delete('section');
     if (city) params.set('city', city); else params.delete('city');
     const next = '#' + params.toString();
     if (location.hash !== next) {
@@ -279,6 +257,173 @@ function getActivityLink(description, city) {
     return { url: `https://www.google.com/search?q=${encodeURIComponent(description + ' ' + city)}`, displayText: description };
 }
 
+function createFlightCard(flight, isClickable = false) {
+    const flightDiv = document.createElement('div');
+    flightDiv.className = 'card boarding flight';
+    if (!isClickable) flightDiv.classList.add('non-clickable');
+    const airlineLogo = getAirlineLogoUrl(flight.airline);
+    const fromCc = getCountryCodeFromLocation(flight.from);
+    const toCc = getCountryCodeFromLocation(flight.to);
+    const fromFlag = getFlagUrl(fromCc);
+    const toFlag = getFlagUrl(toCc);
+    const detailsHtml = flight.details
+        ? flight.details.replace(/(,\s*[^,]+layover[^,]+)/, '<span class="layover-highlight">$1</span>')
+        : '';
+    flightDiv.innerHTML = `
+        <div class="pass-header">
+            <div class="pass-title">
+                ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                <span class="route-text">${flight.from}</span>
+                <span class="arrow">→</span>
+                ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                <span class="route-text">${flight.to}</span>
+            </div>
+            <div class="pass-subtitle">
+                <span class="airline-chip" role="img" aria-label="${flight.airline}">
+                    ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
+                    <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
+                </span>
+            </div>
+        </div>
+        <div class="pass-row">
+            <div class="chip">${formatDateTimeShort(flight.departure)}</div>
+            <div class="chip">${formatDateTimeShort(flight.arrival)}</div>
+        </div>
+        ${detailsHtml ? `<div class="pass-footer">${detailsHtml}</div>` : ''}
+    `;
+    return flightDiv;
+}
+
+function createHotelCard(hotel) {
+    const hotelDiv = document.createElement('div');
+    hotelDiv.className = 'card boarding hotel';
+    const mapsLink = hotel.address && hotel.address !== 'Not defined' ? createMapsLink(hotel.address) : '';
+    const gmapsLink = hotel.address && hotel.address !== 'Not defined' ? createGoogleMapsLink(hotel.address) : '';
+    hotelDiv.innerHTML = `
+        <div class="pass-header">
+            <div class="pass-title">${hotel.hotelName}</div>
+            <div class="pass-subtitle">${hotel.type}</div>
+        </div>
+        <div class="pass-row">
+            <div class="chip"><span class="label">Check‑in</span> ${hotel.checkin.includes('T') ? formatDateTime(hotel.checkin) : formatDate(hotel.checkin)}</div>
+            <div class="chip"><span class="label">Check‑out</span> ${hotel.checkout.includes('T') ? formatDateTime(hotel.checkout) : formatDate(hotel.checkout)}</div>
+        </div>
+        <div class="pass-footer address">${hotel.address}</div>
+        <div class="pass-actions">
+            ${mapsLink ? `<a class="icon-btn apple-maps" href="${mapsLink}" target="_blank" rel="noopener" aria-label="Open in Apple Maps"><img src="appleMaps.png" alt="" class="icon-img"></a>` : ''}
+            ${gmapsLink ? `<a class="icon-btn google-maps" href="${gmapsLink}" target="_blank" rel="noopener" aria-label="Open in Google Maps"><img src="googleMaps.png" alt="" class="icon-img"></a>` : ''}
+        </div>
+    `;
+    hotelDiv.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
+    return hotelDiv;
+}
+
+function createItineraryCard(stop, tripData) {
+    const card = document.createElement('div');
+    const citySlug = slugifyCity(stop.city);
+    card.className = 'card boarding itinerary itinerary-card playing';
+    card.setAttribute('data-city', citySlug);
+    card.id = `itinerary-${citySlug}`;
+    const days = getDateRangeForCity(stop.city, tripData);
+
+    const slidesHtml = days.map((d, dayIdx) => {
+        const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        const dayData = stop.days.find(day => day.date === dateStr) || { activities: [] };
+        const activities = dayData.activities || [];
+        const labels = ['mañana', 'tarde', 'noche'];
+        const list = labels.map((label, i) => {
+            const activity = activities.find(act => act.period.trim().toLowerCase() === label);
+            if (!activity) {
+                console.warn(`No activity found for ${label} on ${dateStr} in ${stop.city}`);
+                return `<div class="activity-item"><span class="activity-label">Actividad de ${label}</span></div>`;
+            }
+            const { url, displayText } = getActivityLink(activity.description, stop.city);
+            return `
+            <div class="activity-item" role="listitem" tabindex="0">
+                ${url ? `
+                    <a href="${url}" target="_blank" rel="noopener" class="activity-link" aria-label="${activity.description}">
+                        ${displayText}
+                    </a>
+                    ${displayText !== activity.description ? `<span class="activity-context">${activity.description.replace(displayText, '')}</span>` : ''}
+                ` : `
+                    <span class="activity-label">${activity.description}</span>
+                `}
+            </div>`;
+        }).join('');
+        return `
+        <div class="slide" data-day="${dayIdx}">
+            <div class="date-header">
+                <div class="date-title">${formatDayShort(d)}</div>
+                <div class="date-subtitle">${stop.city}</div>
+            </div>
+            <div class="activity-list" role="list">
+                ${list}
+            </div>
+        </div>`;
+    }).join('');
+
+    const dotsHtml = days.map((_, i) => `<span class="slide-dot${i === 0 ? ' active' : ''}" data-dot="${i}"></span>`).join('');
+
+    card.innerHTML = `
+        <div class="pass-header">
+            <div class="pass-title">${stop.city}</div>
+            <div class="pass-subtitle">Itinerario</div>
+        </div>
+        <div class="pass-row">
+            <div class="chip"><span class="label">Fechas</span> ${stop.dates}</div>
+        </div>
+        <div class="slides" data-index="0">
+            <div class="slides-track">
+                ${slidesHtml || ''}
+            </div>
+        </div>
+        <div class="slide-dots">${dotsHtml}</div>
+        <div class="slide-nav">
+            <button class="nav-btn prev" type="button">Anterior</button>
+            <button class="nav-btn next" type="button">Siguiente</button>
+        </div>
+    `;
+
+    const slidesEl = card.querySelector('.slides');
+    const trackEl = card.querySelector('.slides-track');
+    const dotsEl = card.querySelectorAll('.slide-dot');
+    const prevBtn = card.querySelector('.nav-btn.prev');
+    const nextBtn = card.querySelector('.nav-btn.next');
+    const total = Math.max(days.length, 1);
+    function update(index) {
+        const clamped = Math.max(0, Math.min(index, total - 1));
+        slidesEl.setAttribute('data-index', String(clamped));
+        trackEl.style.transform = `translateX(-${clamped * 100}%)`;
+        dotsEl.forEach((d, i) => d.classList.toggle('active', i === clamped));
+        prevBtn.disabled = clamped === 0;
+        nextBtn.disabled = clamped === total - 1;
+    }
+    prevBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) - 1));
+    nextBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) + 1));
+    dotsEl.forEach(dot => dot.addEventListener('click', () => update(Number(dot.getAttribute('data-dot')))));
+
+    let startX = 0; let deltaX = 0; let dragging = false;
+    slidesEl.addEventListener('touchstart', (e) => {
+        if (!e.touches || !e.touches[0]) return;
+        dragging = true; startX = e.touches[0].clientX; deltaX = 0;
+    }, { passive: true });
+    slidesEl.addEventListener('touchmove', (e) => {
+        if (!dragging || !e.touches || !e.touches[0]) return;
+        deltaX = e.touches[0].clientX - startX;
+    }, { passive: true });
+    slidesEl.addEventListener('touchend', () => {
+        if (!dragging) return; dragging = false;
+        const width = slidesEl.clientWidth || 1;
+        const threshold = width * 0.15;
+        const current = Number(slidesEl.getAttribute('data-index'));
+        if (deltaX < -threshold) update(current + 1);
+        else if (deltaX > threshold) update(current - 1);
+        deltaX = 0;
+    });
+
+    return card;
+}
+
 function renderFlights(tripData) {
     const flightsList = document.getElementById('flightsList');
     flightsList.innerHTML = '';
@@ -290,41 +435,10 @@ function renderFlights(tripData) {
     
     const mainFlights = tripData.flights.filter(flight => flight.group === 'main');
     mainFlights.forEach(flight => {
-        const flightDiv = document.createElement('div');
-        flightDiv.className = 'card boarding flight';
-        const airlineLogo = getAirlineLogoUrl(flight.airline);
-        const fromCc = getCountryCodeFromLocation(flight.from);
-        const toCc = getCountryCodeFromLocation(flight.to);
-        const fromFlag = getFlagUrl(fromCc);
-        const toFlag = getFlagUrl(toCc);
-        const detailsHtml = flight.details
-            ? flight.details.replace(/(,\s*[^,]+layover[^,]+)/, '<span class="layover-highlight">$1</span>')
-            : '';
-        flightDiv.innerHTML = `
-            <div class="pass-header">
-                <div class="pass-title">
-                    ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
-                    <span class="route-text">${flight.from}</span>
-                    <span class="arrow">→</span>
-                    ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
-                    <span class="route-text">${flight.to}</span>
-                </div>
-                <div class="pass-subtitle">
-                    <span class="airline-chip" role="img" aria-label="${flight.airline}">
-                        ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
-                        <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
-                    </span>
-                </div>
-            </div>
-            <div class="pass-row">
-                <div class="chip">${formatDateTimeShort(flight.departure)}</div>
-                <div class="chip">${formatDateTimeShort(flight.arrival)}</div>
-            </div>
-            ${detailsHtml ? `<div class="pass-footer">${detailsHtml}</div>` : ''}
-        `;
+        const flightDiv = createFlightCard(flight, true);
+        const city = getCityFromFlight(flight);
         flightDiv.addEventListener('click', () => {
-            const city = getCityFromFlight(flight);
-            focusItineraryCity(city);
+            showAccommodationForCity(city, tripData);
         });
         flightsList.appendChild(flightDiv);
     });
@@ -336,42 +450,7 @@ function renderFlights(tripData) {
         partialGroupDiv.innerHTML = '<div class="partial-group-label">Partial Group Itinerary</div>';
         
         partialFlights.forEach(flight => {
-            const flightDiv = document.createElement('div');
-            flightDiv.className = 'card boarding flight';
-            const airlineLogo = getAirlineLogoUrl(flight.airline);
-            const fromCc = getCountryCodeFromLocation(flight.from);
-            const toCc = getCountryCodeFromLocation(flight.to);
-            const fromFlag = getFlagUrl(fromCc);
-            const toFlag = getFlagUrl(toCc);
-            const detailsHtml = flight.details
-                ? flight.details.replace(/(,\s*[^,]+layover[^,]+)/, '<span class="layover-highlight">$1</span>')
-                : '';
-            flightDiv.innerHTML = `
-                <div class="pass-header">
-                    <div class="pass-title">
-                        ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
-                        <span class="route-text">${flight.from}</span>
-                        <span class="arrow">→</span>
-                        ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
-                        <span class="route-text">${flight.to}</span>
-                    </div>
-                    <div class="pass-subtitle">
-                        <span class="airline-chip" role="img" aria-label="${flight.airline}">
-                            ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
-                            <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
-                        </span>
-                    </div>
-                </div>
-                <div class="pass-row">
-                    <div class="chip">${formatDateTimeShort(flight.departure)}</div>
-                    <div class="chip">${formatDateTimeShort(flight.arrival)}</div>
-                </div>
-                ${detailsHtml ? `<div class="pass-footer">${detailsHtml}</div>` : ''}
-            `;
-            flightDiv.addEventListener('click', () => {
-                const city = getCityFromFlight(flight);
-                focusItineraryCity(city);
-            });
+            const flightDiv = createFlightCard(flight, false);
             partialGroupDiv.appendChild(flightDiv);
         });
         
@@ -379,159 +458,56 @@ function renderFlights(tripData) {
     }
 }
 
-function renderHotels(tripData) {
-    const hotelsList = document.getElementById('hotelsList');
-    hotelsList.innerHTML = '';
-    
-    if (tripData.hotels.length === 0) {
-        hotelsList.innerHTML = '<div class="empty-state"><h3>No accommodations added yet</h3></div>';
-        return;
-    }
-    
-    tripData.hotels.forEach(hotel => {
-        const hotelDiv = document.createElement('div');
-        hotelDiv.className = 'card boarding hotel';
-        const mapsLink = hotel.address && hotel.address !== 'Not defined' ? createMapsLink(hotel.address) : '';
-        const gmapsLink = hotel.address && hotel.address !== 'Not defined' ? createGoogleMapsLink(hotel.address) : '';
-        hotelDiv.innerHTML = `
-            <div class="pass-header">
-                <div class="pass-title">${hotel.hotelName}</div>
-                <div class="pass-subtitle">${hotel.type}</div>
-            </div>
-            <div class="pass-row">
-                <div class="chip"><span class="label">Check‑in</span> ${hotel.checkin.includes('T') ? formatDateTime(hotel.checkin) : formatDate(hotel.checkin)}</div>
-                <div class="pass-row">
-                <div class="chip"><span class="label">Check‑out</span> ${hotel.checkout.includes('T') ? formatDateTime(hotel.checkout) : formatDate(hotel.checkout)}</div>
-            </div>
-            <div class="pass-footer address">${hotel.address}</div>
-            <div class="pass-actions">
-                ${mapsLink ? `<a class="icon-btn apple-maps" href="${mapsLink}" target="_blank" rel="noopener" aria-label="Open in Apple Maps"><img src="appleMaps.png" alt="" class="icon-img"></a>` : ''}
-                ${gmapsLink ? `<a class="icon-btn google-maps" href="${gmapsLink}" target="_blank" rel="noopener" aria-label="Open in Google Maps"><img src="googleMaps.png" alt="" class="icon-img"></a>` : ''}
-            </div>
-        `;
-        hotelDiv.addEventListener('click', () => {
-            const city = getCityForHotel(hotel);
-            focusItineraryCity(city);
-        });
-        hotelDiv.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
-        hotelsList.appendChild(hotelDiv);
-    });
+function showSection(sectionId) {
+    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    updateHash({ section: sectionId });
 }
 
-function renderItinerary(tripData) {
-    const itineraryList = document.getElementById('itineraryList');
-    if (!itineraryList) {
-        console.error('itineraryList element not found');
-        return;
-    }
+function addBackButton(sectionId, onClick, label = 'Back to Flights') {
+    const sectionEl = document.getElementById(sectionId);
+    let backBtn = sectionEl.querySelector('.back-btn');
+    if (backBtn) backBtn.remove();
+    backBtn = document.createElement('button');
+    backBtn.className = 'back-btn';
+    backBtn.innerHTML = `<span class="back-icon">←</span> ${label}`;
+    backBtn.addEventListener('click', onClick);
+    sectionEl.prepend(backBtn);
+}
 
-    itineraryList.innerHTML = '';
-
-    (tripData.itinerary || []).forEach(stop => {
-        const card = document.createElement('div');
-        const citySlug = slugifyCity(stop.city);
-        card.className = 'card boarding itinerary itinerary-card playing';
-        card.setAttribute('data-city', citySlug);
-        card.id = `itinerary-${citySlug}`;
-        const days = getDateRangeForCity(stop.city, tripData);
-
-        const slidesHtml = days.map((d, dayIdx) => {
-            const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
-            const dayData = stop.days.find(day => day.date === dateStr) || { activities: [] };
-            const activities = dayData.activities || [];
-            const labels = ['mañana', 'tarde', 'noche'];
-            const list = labels.map((label, i) => {
-                const activity = activities.find(act => act.period.trim().toLowerCase() === label);
-                if (!activity) {
-                    console.warn(`No activity found for ${label} on ${dateStr} in ${stop.city}`);
-                    return `<div class="activity-item"><span class="activity-label">Actividad de ${label}</span></div>`;
-                }
-                const { url, displayText } = getActivityLink(activity.description, stop.city);
-                return `
-                <div class="activity-item" role="listitem" tabindex="0">
-                    ${url ? `
-                        <a href="${url}" target="_blank" rel="noopener" class="activity-link" aria-label="${activity.description}">
-                            ${displayText}
-                        </a>
-                        ${displayText !== activity.description ? `<span class="activity-context">${activity.description.replace(displayText, '')}</span>` : ''}
-                    ` : `
-                        <span class="activity-label">${activity.description}</span>
-                    `}
-                </div>`;
-            }).join('');
-            return `
-            <div class="slide" data-day="${dayIdx}">
-                <div class="date-header">
-                    <div class="date-title">${formatDayShort(d)}</div>
-                    <div class="date-subtitle">${stop.city}</div>
-                </div>
-                <div class="activity-list" role="list">
-                    ${list}
-                </div>
-            </div>`;
-        }).join('');
-
-        const dotsHtml = days.map((_, i) => `<span class="slide-dot${i === 0 ? ' active' : ''}" data-dot="${i}"></span>`).join('');
-
-        card.innerHTML = `
-            <div class="pass-header">
-                <div class="pass-title">${stop.city}</div>
-                <div class="pass-subtitle">Itinerario</div>
-            </div>
-            <div class="pass-row">
-                <div class="chip"><span class="label">Fechas</span> ${stop.dates}</div>
-            </div>
-            <div class="slides" data-index="0">
-                <div class="slides-track">
-                    ${slidesHtml || ''}
-                </div>
-            </div>
-            <div class="slide-dots">${dotsHtml}</div>
-            <div class="slide-nav">
-                <button class="nav-btn prev" type="button">Anterior</button>
-                <button class="nav-btn next" type="button">Siguiente</button>
-            </div>
-        `;
-
-        const slidesEl = card.querySelector('.slides');
-        const trackEl = card.querySelector('.slides-track');
-        const dotsEl = card.querySelectorAll('.slide-dot');
-        const prevBtn = card.querySelector('.nav-btn.prev');
-        const nextBtn = card.querySelector('.nav-btn.next');
-        const total = Math.max(days.length, 1);
-        function update(index) {
-            const clamped = Math.max(0, Math.min(index, total - 1));
-            slidesEl.setAttribute('data-index', String(clamped));
-            trackEl.style.transform = `translateX(-${clamped * 100}%)`;
-            dotsEl.forEach((d, i) => d.classList.toggle('active', i === clamped));
-            prevBtn.disabled = clamped === 0;
-            nextBtn.disabled = clamped === total - 1;
-        }
-        prevBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) - 1));
-        nextBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) + 1));
-        dotsEl.forEach(dot => dot.addEventListener('click', () => update(Number(dot.getAttribute('data-dot')))));
-
-        let startX = 0; let deltaX = 0; let dragging = false;
-        slidesEl.addEventListener('touchstart', (e) => {
-            if (!e.touches || !e.touches[0]) return;
-            dragging = true; startX = e.touches[0].clientX; deltaX = 0;
-        }, { passive: true });
-        slidesEl.addEventListener('touchmove', (e) => {
-            if (!dragging || !e.touches || !e.touches[0]) return;
-            deltaX = e.touches[0].clientX - startX;
-        }, { passive: true });
-        slidesEl.addEventListener('touchend', () => {
-            if (!dragging) return; dragging = false;
-            const width = slidesEl.clientWidth || 1;
-            const threshold = width * 0.15;
-            const current = Number(slidesEl.getAttribute('data-index'));
-            if (deltaX < -threshold) update(current + 1);
-            else if (deltaX > threshold) update(current - 1);
-            deltaX = 0;
+function showAccommodationForCity(city, tripData) {
+    showSection('accommodation');
+    const hotelsList = document.getElementById('hotelsList');
+    hotelsList.innerHTML = '';
+    const hotel = tripData.hotels.find(h => getCityForHotel(h) === city);
+    if (hotel) {
+        const hotelDiv = createHotelCard(hotel);
+        hotelDiv.addEventListener('click', () => {
+            showItineraryForCity(city, tripData);
         });
+        hotelsList.appendChild(hotelDiv);
+    } else {
+        hotelsList.innerHTML = '<div class="empty-state"><h3>No accommodation found for this city</h3></div>';
+    }
+    addBackButton('accommodation', () => showSection('flights'), 'Back to Flights');
+    updateHash({ section: 'accommodation', city: slugifyCity(city) });
+}
 
+function showItineraryForCity(city, tripData) {
+    showSection('itinerary');
+    const itineraryList = document.getElementById('itineraryList');
+    itineraryList.innerHTML = '';
+    const stop = tripData.itinerary.find(s => s.city === city);
+    if (stop) {
+        const card = createItineraryCard(stop, tripData);
+        card.classList.add('highlight');
+        setTimeout(() => card.classList.remove('highlight'), 1600);
         itineraryList.appendChild(card);
-    });
+    } else {
+        itineraryList.innerHTML = '<div class="empty-state"><h3>No itinerary found for this city</h3></div>';
+    }
+    addBackButton('itinerary', () => showAccommodationForCity(city, tripData), 'Back to Accommodation');
+    updateHash({ section: 'itinerary', city: slugifyCity(city) });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -554,21 +530,20 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const tripData = await loadTripData();
     renderFlights(tripData);
-    renderHotels(tripData);
-    renderItinerary(tripData);
-    
-    document.querySelectorAll('.tab').forEach(tab => {
-        tab.addEventListener('click', () => switchTab(tab.dataset.tab));
-    });
+
     const params = new URLSearchParams(location.hash.slice(1));
-    const hashTab = params.get('tab');
+    const hashSection = params.get('section');
     const hashCity = params.get('city');
-    let savedTab = null;
-    try { savedTab = localStorage.getItem('activeTab'); } catch (_) {}
-    const initialTab = hashTab || savedTab || 'flights';
-    if (initialTab !== 'flights') switchTab(initialTab);
-    if (hashTab === 'itinerary' && hashCity) {
-        const guessName = hashCity.replace(/-/g, ' ');
-        focusItineraryCity(guessName);
+    let initialSection = hashSection || 'flights';
+    if (initialSection === 'flights') {
+        showSection('flights');
+    } else if (initialSection === 'accommodation' && hashCity) {
+        const city = hashCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        showAccommodationForCity(city, tripData);
+    } else if (initialSection === 'itinerary' && hashCity) {
+        const city = hashCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+        showItineraryForCity(city, tripData);
+    } else {
+        showSection('flights');
     }
 });
