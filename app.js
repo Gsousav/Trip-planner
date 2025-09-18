@@ -80,9 +80,7 @@ function getDateRangeForCity(cityName, tripData) {
     const current = hotelsSorted[matchIndex];
     const next = hotelsSorted[matchIndex + 1] || null;
 
-    // Start at the beginning of check-in day
     const start = toStartOfDay((current.checkin || '').includes('T') ? current.checkin : (current.checkin || '') + 'T00:00:00');
-    // End is the earlier of next.checkin or current.checkout (both exclusive), normalized to start of that day
     const candidateEnds = [];
     if (current.checkout) candidateEnds.push(toStartOfDay((current.checkout).includes('T') ? current.checkout : current.checkout + 'T00:00:00'));
     if (next && next.checkin) candidateEnds.push(toStartOfDay((next.checkin).includes('T') ? next.checkin : next.checkin + 'T00:00:00'));
@@ -95,7 +93,6 @@ function getDateRangeForCity(cityName, tripData) {
         days.push(new Date(d));
         d.setDate(d.getDate() + 1);
     }
-    // Include the departure day as an extra itinerary card (end day)
     if (days.length > 0) {
         days.push(new Date(endExclusive));
     }
@@ -159,23 +156,19 @@ function createGoogleMapsLink(address) {
     return `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
 
-// Map helpers for UI icons
 function getAirlineLogoUrl(airlineName) {
     const key = (airlineName || '').toLowerCase();
-    // Prefer local assets when available
     if (key.includes('iberia')) return 'iberia.png';
     if (key.includes('british airways')) return 'british.png';
     if (key.includes('klm')) return 'klm.png';
     if (key.includes('plusultra') || key.includes('plus ultra')) return 'plusUltra.png';
     if (key.includes('american airlines') || key.includes('american')) return 'americanAirlines.png';
     if (key.includes('united')) return 'unitedAirlines.png';
-    // Fallback to external or none for others
     return '';
 }
 
 function getCountryCodeFromLocation(locationStr) {
     const name = (locationStr || '').toLowerCase();
-    // Simple city-to-country mapping for this itinerary
     if (name.includes('madrid')) return 'es';
     if (name.includes('mallorca') || name.includes('palma')) return 'es';
     if (name.includes('london')) return 'gb';
@@ -209,6 +202,37 @@ function updateHash({ tab, city }) {
     }
 }
 
+function toggleTheme() {
+    const html = document.documentElement;
+    const currentTheme = html.getAttribute('data-theme');
+    const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    let nextTheme;
+
+    if (currentTheme === 'system') {
+        nextTheme = isDark ? 'light' : 'dark';
+    } else if (currentTheme === 'dark') {
+        nextTheme = 'light';
+    } else {
+        nextTheme = 'dark';
+    }
+
+    html.setAttribute('data-theme', nextTheme);
+    try { localStorage.setItem('theme', nextTheme); } catch (_) {}
+    updateThemeIcon(nextTheme);
+}
+
+function updateThemeIcon(theme) {
+    const icon = document.querySelector('.theme-icon');
+    if (!icon) return;
+    if (theme === 'dark') {
+        icon.textContent = '☀️';
+        icon.setAttribute('aria-label', 'Switch to light mode');
+    } else {
+        icon.textContent = '🌙';
+        icon.setAttribute('aria-label', 'Switch to dark mode');
+    }
+}
+
 function renderFlights(tripData) {
     const flightsList = document.getElementById('flightsList');
     flightsList.innerHTML = '';
@@ -218,7 +242,6 @@ function renderFlights(tripData) {
         return;
     }
     
-    // Render main group flights
     const mainFlights = tripData.flights.filter(flight => flight.group === 'main');
     mainFlights.forEach(flight => {
         const flightDiv = document.createElement('div');
@@ -228,7 +251,6 @@ function renderFlights(tripData) {
         const toCc = getCountryCodeFromLocation(flight.to);
         const fromFlag = getFlagUrl(fromCc);
         const toFlag = getFlagUrl(toCc);
-        // Highlight layover in details
         const detailsHtml = flight.details
             ? flight.details.replace(/(,\s*[^,]+layover[^,]+)/, '<span class="layover-highlight">$1</span>')
             : '';
@@ -261,7 +283,6 @@ function renderFlights(tripData) {
         flightsList.appendChild(flightDiv);
     });
     
-    // Render partial group flights with separator
     const partialFlights = tripData.flights.filter(flight => flight.group === 'partial');
     if (partialFlights.length > 0) {
         const partialGroupDiv = document.createElement('div');
@@ -276,12 +297,11 @@ function renderFlights(tripData) {
             const toCc = getCountryCodeFromLocation(flight.to);
             const fromFlag = getFlagUrl(fromCc);
             const toFlag = getFlagUrl(toCc);
-            // Highlight layover in details
             const detailsHtml = flight.details
                 ? flight.details.replace(/(,\s*[^,]+layover[^,]+)/, '<span class="layover-highlight">$1</span>')
                 : '';
             flightDiv.innerHTML = `
-            <div class="pass-header">
+                <div class="pass-header">
                     <div class="pass-title">
                         ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
                         <span class="route-text">${flight.from}</span>
@@ -289,12 +309,12 @@ function renderFlights(tripData) {
                         ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
                         <span class="route-text">${flight.to}</span>
                     </div>
-                <div class="pass-subtitle">
-                    <span class="airline-chip" role="img" aria-label="${flight.airline}">
-                        ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
-                        <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
-                    </span>
-                </div>
+                    <div class="pass-subtitle">
+                        <span class="airline-chip" role="img" aria-label="${flight.airline}">
+                            ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
+                            <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
+                        </span>
+                    </div>
                 </div>
                 <div class="pass-row">
                     <div class="chip">${formatDateTimeShort(flight.departure)}</div>
@@ -374,7 +394,6 @@ function renderItinerary(tripData) {
         card.id = `itinerary-${citySlug}`;
         const days = getDateRangeForCity(stop.city, tripData);
         const checksPerCity = stored[citySlug] || {};
-        // Build slides markup
         const slidesHtml = days.map((d, dayIdx) => {
             const labels = ['Morning activity', 'Afternoon activity', 'Evening activity'];
             const checkedIdxs = Array.isArray(checksPerCity[dayIdx]) ? checksPerCity[dayIdx] : [];
@@ -420,7 +439,6 @@ function renderItinerary(tripData) {
             </div>
         `;
 
-        // Nav and swipe behavior
         const slidesEl = card.querySelector('.slides');
         const trackEl = card.querySelector('.slides-track');
         const dotsEl = card.querySelectorAll('.slide-dot');
@@ -439,7 +457,6 @@ function renderItinerary(tripData) {
         nextBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) + 1));
         dotsEl.forEach(dot => dot.addEventListener('click', () => update(Number(dot.getAttribute('data-dot')))));
 
-        // Touch swipe with improved sensitivity
         let startX = 0; let deltaX = 0; let dragging = false;
         slidesEl.addEventListener('touchstart', (e) => {
             if (!e.touches || !e.touches[0]) return;
@@ -452,14 +469,13 @@ function renderItinerary(tripData) {
         slidesEl.addEventListener('touchend', () => {
             if (!dragging) return; dragging = false;
             const width = slidesEl.clientWidth || 1;
-            const threshold = width * 0.15; // Lowered threshold for better sensitivity
+            const threshold = width * 0.15;
             const current = Number(slidesEl.getAttribute('data-index'));
             if (deltaX < -threshold) update(current + 1);
             else if (deltaX > threshold) update(current - 1);
             deltaX = 0;
         });
 
-        // Checklist toggle per day persistence
         card.querySelectorAll('.slide').forEach(slide => {
             const dayIdx = Number(slide.getAttribute('data-day'));
             slide.querySelectorAll('.check-item').forEach(row => {
@@ -482,23 +498,36 @@ function renderItinerary(tripData) {
             });
         });
 
-        // Initialize
         update(0);
         itineraryList.appendChild(card);
     });
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
+    const html = document.documentElement;
+    let savedTheme = null;
+    try { savedTheme = localStorage.getItem('theme'); } catch (_) {}
+    const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    const initialTheme = savedTheme && savedTheme !== 'system' ? savedTheme : 'system';
+    html.setAttribute('data-theme', initialTheme);
+    updateThemeIcon(initialTheme === 'system' ? systemTheme : initialTheme);
+
+    document.querySelector('.theme-toggle').addEventListener('click', toggleTheme);
+
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (html.getAttribute('data-theme') === 'system') {
+            updateThemeIcon(e.matches ? 'dark' : 'light');
+        }
+    });
+
     const tripData = await loadTripData();
     renderFlights(tripData);
     renderHotels(tripData);
     renderItinerary(tripData);
     
-    // Add event listeners for tabs
     document.querySelectorAll('.tab').forEach(tab => {
         tab.addEventListener('click', () => switchTab(tab.dataset.tab));
     });
-    // Restore from hash or storage
     const params = new URLSearchParams(location.hash.slice(1));
     const hashTab = params.get('tab');
     const hashCity = params.get('city');
