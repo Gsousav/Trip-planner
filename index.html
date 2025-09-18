@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Travel Organizer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>Travel Organizer</h1>
+            <p>Plan and track your journey</p>
+        </header>
+
+        <nav class="tabs">
+            <button class="tab active" data-tab="flights">Flights</button>
+            <button class="tab" data-tab="accommodation">Accommodation</button>
+        </nav>
+
+        <main>
+            <section id="flights" class="tab-content active">
+                <div id="flightsList" class="card-list"></div>
+            </section>
+
+            <section id="accommodation" class="tab-content">
+                <div id="hotelsList" class="card-list"></div>
+            </section>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
