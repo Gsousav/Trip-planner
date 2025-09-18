@@ -2,7 +2,9 @@ async function loadTripData() {
     try {
         const response = await fetch('tripData.json');
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        return await response.json();
+        const data = await response.json();
+        console.log('Loaded tripData:', data);
+        return data;
     } catch (error) {
         console.error('Failed to load tripData.json:', error);
         const flightsList = document.getElementById('flightsList');
@@ -11,7 +13,7 @@ async function loadTripData() {
         if (flightsList) flightsList.innerHTML = '<div class="empty-state"><h3>Error loading flight data</h3></div>';
         if (hotelsList) hotelsList.innerHTML = '<div class="empty-state"><h3>Error loading hotel data</h3></div>';
         if (itineraryList) itineraryList.innerHTML = '<div class="empty-state"><h3>Error loading itinerary data</h3></div>';
-        return { flights: [], hotels: [] };
+        return { flights: [], hotels: [], itinerary: [] };
     }
 }
 
@@ -238,6 +240,45 @@ function updateThemeIcon(theme) {
     }
 }
 
+function getActivityLink(description, city) {
+    const desc = description.toLowerCase();
+    // Specific venues or events
+    if (desc.includes('casa lucio')) {
+        return { url: 'https://casalucio.es', displayText: 'Casa Lucio' };
+    }
+    if (desc.includes('harry potter') && desc.includes('studio tour')) {
+        return { url: 'https://www.wbstudiotour.co.uk', displayText: 'Harry Potter Warner Bros. Studio Tour' };
+    }
+    if (desc.includes('ceppi')) {
+        return { url: createGoogleMapsLink('Ceppi’s, Amsterdam'), displayText: 'Ceppi’s' };
+    }
+    // Addresses or neighborhoods
+    if (desc.includes('calle de las infantas')) {
+        return { url: createGoogleMapsLink('Calle de las Infantas, Madrid'), displayText: 'Calle de las Infantas' };
+    }
+    if (desc.includes('cala d\'or')) {
+        return { url: createGoogleMapsLink('Cala d\'Or, Mallorca'), displayText: 'Cala d\'Or' };
+    }
+    if (desc.includes('piccadilly circus')) {
+        return { url: createGoogleMapsLink('Piccadilly Circus, London'), displayText: 'Piccadilly Circus' };
+    }
+    if (desc.includes('puerta del sol')) {
+        return { url: createGoogleMapsLink('Puerta del Sol, Madrid'), displayText: 'Puerta del Sol' };
+    }
+    if (desc.includes('gran vía')) {
+        return { url: createGoogleMapsLink('Gran Vía, Madrid'), displayText: 'Gran Vía' };
+    }
+    if (desc.includes('canales cercanos') || desc.includes('canal cruise')) {
+        return { url: createGoogleMapsLink('Amsterdam Canals'), displayText: 'Amsterdam Canals' };
+    }
+    // Fallback: Non-linkable or generic search
+    if (desc.includes('vuelo') || desc.includes('check-in') || desc.includes('llegada') || desc.includes('tiempo en')) {
+        return { url: '', displayText: description };
+    }
+    // Generic search for unknown activities
+    return { url: `https://www.google.com/search?q=${encodeURIComponent(description + ' ' + city)}`, displayText: description };
+}
+
 function renderFlights(tripData) {
     const flightsList = document.getElementById('flightsList');
     flightsList.innerHTML = '';
@@ -359,6 +400,7 @@ function renderHotels(tripData) {
             </div>
             <div class="pass-row">
                 <div class="chip"><span class="label">Check‑in</span> ${hotel.checkin.includes('T') ? formatDateTime(hotel.checkin) : formatDate(hotel.checkin)}</div>
+                <div class="pass-row">
                 <div class="chip"><span class="label">Check‑out</span> ${hotel.checkout.includes('T') ? formatDateTime(hotel.checkout) : formatDate(hotel.checkout)}</div>
             </div>
             <div class="pass-footer address">${hotel.address}</div>
@@ -385,8 +427,6 @@ function renderItinerary(tripData) {
 
     itineraryList.innerHTML = '';
 
-    const stored = (() => { try { return JSON.parse(localStorage.getItem('itineraryChecks') || '{}'); } catch (_) { return {}; } })();
-
     (tripData.itinerary || []).forEach(stop => {
         const card = document.createElement('div');
         const citySlug = slugifyCity(stop.city);
@@ -394,26 +434,29 @@ function renderItinerary(tripData) {
         card.setAttribute('data-city', citySlug);
         card.id = `itinerary-${citySlug}`;
         const days = getDateRangeForCity(stop.city, tripData);
-        const checksPerCity = stored[citySlug] || {};
 
         const slidesHtml = days.map((d, dayIdx) => {
-            // Normalize date to YYYY-MM-DD for comparison
             const dateStr = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
             const dayData = stop.days.find(day => day.date === dateStr) || { activities: [] };
             const activities = dayData.activities || [];
             const labels = ['mañana', 'tarde', 'noche'];
-            const checkedIdxs = Array.isArray(checksPerCity[dayIdx]) ? checksPerCity[dayIdx] : [];
             const list = labels.map((label, i) => {
                 const activity = activities.find(act => act.period.trim().toLowerCase() === label);
                 if (!activity) {
                     console.warn(`No activity found for ${label} on ${dateStr} in ${stop.city}`);
+                    return `<div class="activity-item"><span class="activity-label">Actividad de ${label}</span></div>`;
                 }
-                const description = activity ? activity.description : `Actividad de ${label}`;
-                const isChecked = checkedIdxs.includes(i);
+                const { url, displayText } = getActivityLink(activity.description, stop.city);
                 return `
-                <div class="check-item${isChecked ? ' checked' : ''}" data-idx="${i}" role="listitem" tabindex="0">
-                    <span class="check-indicator">${isChecked ? '✓' : ''}</span>
-                    <span class="check-label">${description}</span>
+                <div class="activity-item" role="listitem" tabindex="0">
+                    ${url ? `
+                        <a href="${url}" target="_blank" rel="noopener" class="activity-link" aria-label="${activity.description}">
+                            ${displayText}
+                        </a>
+                        ${displayText !== activity.description ? `<span class="activity-context">${activity.description.replace(displayText, '')}</span>` : ''}
+                    ` : `
+                        <span class="activity-label">${activity.description}</span>
+                    `}
                 </div>`;
             }).join('');
             return `
@@ -422,7 +465,7 @@ function renderItinerary(tripData) {
                     <div class="date-title">${formatDayShort(d)}</div>
                     <div class="date-subtitle">${stop.city}</div>
                 </div>
-                <div class="checklist" role="list">
+                <div class="activity-list" role="list">
                     ${list}
                 </div>
             </div>`;
@@ -487,35 +530,6 @@ function renderItinerary(tripData) {
             deltaX = 0;
         });
 
-        card.querySelectorAll('.slide').forEach(slide => {
-            const dayIdx = Number(slide.getAttribute('data-day'));
-            slide.querySelectorAll('.check-item').forEach(row => {
-                row.addEventListener('click', () => {
-                    const idx = Number(row.getAttribute('data-idx'));
-                    row.classList.toggle('checked');
-                    const indicator = row.querySelector('.check-indicator');
-                    const nowChecked = row.classList.contains('checked');
-                    indicator.textContent = nowChecked ? '✓' : '';
-                    const current = (() => { try { return JSON.parse(localStorage.getItem('itineraryChecks') || '{}'); } catch (_) { return {}; } })();
-                    const cityObj = current[citySlug] && typeof current[citySlug] === 'object' ? current[citySlug] : {};
-                    const dayArr = Array.isArray(cityObj[dayIdx]) ? cityObj[dayIdx] : [];
-                    const pos = dayArr.indexOf(idx);
-                    if (nowChecked && pos === -1) dayArr.push(idx);
-                    if (!nowChecked && pos !== -1) dayArr.splice(pos, 1);
-                    cityObj[dayIdx] = dayArr;
-                    current[citySlug] = cityObj;
-                    try { localStorage.setItem('itineraryChecks', JSON.stringify(current)); } catch (_) {}
-                });
-                row.addEventListener('keydown', e => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        row.click();
-                    }
-                });
-            });
-        });
-
-        update(0);
         itineraryList.appendChild(card);
     });
 }
