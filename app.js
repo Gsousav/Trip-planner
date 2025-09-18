@@ -6,7 +6,8 @@ let tripData = {
             from: 'Madrid (MAD)',
             to: 'Palma, Mallorca (PMI)',
             departure: '2025-11-04T19:30:00',
-            arrival: '2025-11-04T20:50:00'
+            arrival: '2025-11-04T20:50:00',
+            group: 'main'
         },
         {
             id: 2,
@@ -14,7 +15,8 @@ let tripData = {
             from: 'Palma, Mallorca (PMI)',
             to: 'London Heathrow (LHR)',
             departure: '2025-11-08T14:25:00',
-            arrival: '2025-11-08T15:40:00'
+            arrival: '2025-11-08T15:40:00',
+            group: 'main'
         },
         {
             id: 3,
@@ -22,7 +24,37 @@ let tripData = {
             from: 'London Heathrow (LHR)',
             to: 'Amsterdam (AMS)',
             departure: '2025-11-13T15:45:00',
-            arrival: '2025-11-13T18:00:00'
+            arrival: '2025-11-13T18:00:00',
+            group: 'main'
+        },
+        {
+            id: 4,
+            airline: 'PlusUltra Airlines',
+            from: 'Lima (LIM)',
+            to: 'Madrid (MAD)',
+            departure: '2025-11-01T18:10:00',
+            arrival: '2025-11-02T13:05:00',
+            group: 'main'
+        },
+        {
+            id: 5,
+            airline: 'United Airlines',
+            from: 'Amsterdam (AMS)',
+            to: 'Houston (IAH)',
+            departure: '2025-11-13T10:20:00',
+            arrival: '2025-11-13T14:40:00',
+            details: 'Economy, Boeing 767, UA 21',
+            group: 'partial'
+        },
+        {
+            id: 6,
+            airline: 'United Airlines',
+            from: 'Houston (IAH)',
+            to: 'Lima (LIM)',
+            departure: '2025-11-13T16:20:00',
+            arrival: '2025-11-13T23:55:00',
+            details: '1 hr 40 min layover in Houston',
+            group: 'partial'
         }
     ],
     hotels: [
@@ -36,7 +68,7 @@ let tripData = {
         },
         {
             id: 2,
-            hotelName: 'Cala d\'Or Airbnb',
+            hotelName: 'Cala d\'Or',
             type: 'Airbnb',
             address: 'Carrer de sa Vinya, 10, Cala d\'Or, Mallorca',
             checkin: '2025-11-04T15:00:00',
@@ -103,7 +135,9 @@ function renderFlights() {
         return;
     }
     
-    tripData.flights.forEach(flight => {
+    // Render main group flights
+    const mainFlights = tripData.flights.filter(flight => flight.group === 'main');
+    mainFlights.forEach(flight => {
         const flightDiv = document.createElement('div');
         flightDiv.className = 'card';
         flightDiv.innerHTML = `
@@ -112,10 +146,36 @@ function renderFlights() {
                 <div class="card-detail route"><strong>Route:</strong> ${flight.from} → ${flight.to}</div>
                 <div class="card-detail"><strong>Departure:</strong> ${formatDateTime(flight.departure)}</div>
                 <div class="card-detail"><strong>Arrival:</strong> ${formatDateTime(flight.arrival)}</div>
+                ${flight.details ? `<div class="card-detail"><strong>Details:</strong> ${flight.details}</div>` : ''}
             </div>
         `;
         flightsList.appendChild(flightDiv);
     });
+    
+    // Render partial group flights with separator
+    const partialFlights = tripData.flights.filter(flight => flight.group === 'partial');
+    if (partialFlights.length > 0) {
+        const partialGroupDiv = document.createElement('div');
+        partialGroupDiv.className = 'partial-group';
+        partialGroupDiv.innerHTML = '<div class="partial-group-label">Partial Group Itinerary</div>';
+        
+        partialFlights.forEach(flight => {
+            const flightDiv = document.createElement('div');
+            flightDiv.className = 'card';
+            flightDiv.innerHTML = `
+                <h3>${flight.airline}: ${flight.from} to ${flight.to}</h3>
+                <div class="card-details">
+                    <div class="card-detail route"><strong>Route:</strong> ${flight.from} → ${flight.to}</div>
+                    <div class="card-detail"><strong>Departure:</strong> ${formatDateTime(flight.departure)}</div>
+                    <div class="card-detail"><strong>Arrival:</strong> ${formatDateTime(flight.arrival)}</div>
+                    ${flight.details ? `<div class="card-detail"><strong>Details:</strong> ${flight.details}</div>` : ''}
+                </div>
+            `;
+            partialGroupDiv.appendChild(flightDiv);
+        });
+        
+        flightsList.appendChild(partialGroupDiv);
+    }
 }
 
 function renderHotels() {
