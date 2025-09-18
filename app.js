@@ -338,8 +338,8 @@ function renderHotels(tripData) {
             </div>
             <div class="pass-footer address">${hotel.address}</div>
             <div class="pass-actions">
-                ${mapsLink ? `<a class="icon-btn" href="${mapsLink}" target="_blank" rel="noopener" aria-label="Open in Apple Maps"><img src="appleMaps.png" alt="" class="icon-img"></a>` : ''}
-                ${gmapsLink ? `<a class="icon-btn" href="${gmapsLink}" target="_blank" rel="noopener" aria-label="Open in Google Maps"><img src="googleMaps.png" alt="" class="icon-img"></a>` : ''}
+                ${mapsLink ? `<a class="icon-btn apple-maps" href="${mapsLink}" target="_blank" rel="noopener" aria-label="Open in Apple Maps"><img src="appleMaps.png" alt="" class="icon-img"></a>` : ''}
+                ${gmapsLink ? `<a class="icon-btn google-maps" href="${gmapsLink}" target="_blank" rel="noopener" aria-label="Open in Google Maps"><img src="googleMaps.png" alt="" class="icon-img"></a>` : ''}
             </div>
         `;
         hotelDiv.addEventListener('click', () => {
@@ -439,7 +439,7 @@ function renderItinerary(tripData) {
         nextBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) + 1));
         dotsEl.forEach(dot => dot.addEventListener('click', () => update(Number(dot.getAttribute('data-dot')))));
 
-        // Touch swipe
+        // Touch swipe with improved sensitivity
         let startX = 0; let deltaX = 0; let dragging = false;
         slidesEl.addEventListener('touchstart', (e) => {
             if (!e.touches || !e.touches[0]) return;
@@ -452,7 +452,7 @@ function renderItinerary(tripData) {
         slidesEl.addEventListener('touchend', () => {
             if (!dragging) return; dragging = false;
             const width = slidesEl.clientWidth || 1;
-            const threshold = width * 0.18;
+            const threshold = width * 0.15; // Lowered threshold for better sensitivity
             const current = Number(slidesEl.getAttribute('data-index'));
             if (deltaX < -threshold) update(current + 1);
             else if (deltaX > threshold) update(current - 1);

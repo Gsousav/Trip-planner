@@ -2,27 +2,35 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trip Itinerary</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Eurotrip</title>
     <link rel="stylesheet" href="styles.css">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 </head>
 <body>
     <div class="container">
-        <div class="tabs">
+        <nav class="tabs">
             <button class="tab active" data-tab="flights">Flights</button>
-            <button class="tab" data-tab="hotels">Hotels</button>
+            <button class="tab" data-tab="accommodation">Accommodation</button>
             <button class="tab" data-tab="itinerary">Itinerary</button>
-        </div>
-        <div id="flights" class="tab-content active">
-            <div id="flightsList" class="card-list"></div>
-        </div>
-        <div id="hotels" class="tab-content">
-            <div id="hotelsList" class="card-list"></div>
-        </div>
-        <div id="itinerary" class="tab-content">
-            <div id="itineraryList" class="card-list"></div>
-        </div>
+        </nav>
+
+        <main>
+            <section id="flights" class="tab-content active">
+                <div id="flightsList" class="card-list"></div>
+            </section>
+
+            <section id="accommodation" class="tab-content">
+                <div id="hotelsList" class="card-list"></div>
+            </section>
+
+            <section id="itinerary" class="tab-content">
+                <div id="itineraryList" class="card-list"></div>
+            </section>
+        </main>
     </div>
+
     <script src="app.js"></script>
 </body>
 </html>
