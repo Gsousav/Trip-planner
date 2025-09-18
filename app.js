@@ -412,8 +412,8 @@ function renderHotels() {
             </div>
             <div class="pass-footer address">${hotel.address}</div>
             <div class="pass-actions">
-                ${mapsLink ? `<a class="link-btn" href="${mapsLink}" target="_blank" rel="noopener">Apple Maps</a>` : ''}
-                ${gmapsLink ? `<a class="link-btn" href="${gmapsLink}" target="_blank" rel="noopener">Google Maps</a>` : ''}
+                ${mapsLink ? `<a class=\"icon-btn\" href=\"${mapsLink}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Open in Apple Maps\"><img src=\"appleMaps.png\" alt=\"\" class=\"icon-img\"></a>` : ''}
+                ${gmapsLink ? `<a class=\"icon-btn\" href=\"${gmapsLink}\" target=\"_blank\" rel=\"noopener\" aria-label=\"Open in Google Maps\"><img src=\"googleMaps.png\" alt=\"\" class=\"icon-img\"></a>` : ''}
             </div>
         `;
         hotelDiv.addEventListener('click', () => {

@@ -266,6 +266,28 @@ body {
     background: #4338ca; /* indigo-700 */
 }
 
+/* Small circular icon buttons (maps) */
+.icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #f5f5f7;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.06), inset 0 0 0 1px rgba(0,0,0,0.06);
+}
+
+.icon-btn:active {
+    transform: scale(0.98);
+}
+
+.icon-img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+}
+
 /* Itinerary checklist */
 .checklist {
     display: flex;
@@ -582,18 +604,43 @@ body {
 .airline-chip {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    background: #eef2ff; /* indigo-100 */
-    color: #3730a3; /* indigo-800 */
-    box-shadow: inset 0 0 0 1px rgba(55,48,163,0.18);
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: transparent; /* No background to show PNG transparency */
+    overflow: hidden; /* Clip to circular shape */
 }
 
 .airline-chip .tiny-logo {
-    width: 18px;
-    height: 18px;
+    width: 36px; /* Slightly smaller to avoid edge clipping */
+    height: 36px; /* Slightly smaller to avoid edge clipping */
+    border-radius: 50%; /* Keep circular */
+    object-fit: contain; /* Show entire logo without cropping */
+    margin: 0; /* No margin */
+    background: transparent; /* No background */
+}
+
+.airline-chip .tiny-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px; /* Match chip size */
+    height: 40px; /* Match chip size */
     border-radius: 50%;
-    box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
-    background: #fff;
+    background: transparent; /* No background */
+    color: #3730a3; /* indigo-800 */
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    line-height: 40px; /* Center text vertically */
+    margin: 0;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.15s ease;
+}
+
+.airline-chip .tiny-badge.show {
+    opacity: 1;
+    transform: scale(1);
 }
