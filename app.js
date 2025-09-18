@@ -465,17 +465,14 @@ function renderItinerary(tripData) {
         slidesEl.addEventListener('touchmove', (e) => {
             if (!dragging || !e.touches || !e.touches[0]) return;
             deltaX = e.touches[0].clientX - startX;
-            const offset = -Number(slidesEl.getAttribute('data-index')) * slidesEl.clientWidth + deltaX;
-            trackEl.style.transform = `translateX(${offset}px)`;
         }, { passive: true });
         slidesEl.addEventListener('touchend', () => {
             if (!dragging) return; dragging = false;
             const width = slidesEl.clientWidth || 1;
-            const threshold = width * 0.1; // Lowered from 0.15 for snappier response
+            const threshold = width * 0.15;
             const current = Number(slidesEl.getAttribute('data-index'));
             if (deltaX < -threshold) update(current + 1);
             else if (deltaX > threshold) update(current - 1);
-            else update(current); // Snap back to current slide
             deltaX = 0;
         });
 
@@ -518,7 +515,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.querySelector('.theme-toggle').addEventListener('click', toggleTheme);
 
     window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-        if (html.getAttribute('data-theme') === 'system') {
+        if (html.getAttriabute('data-theme') === 'system') {
             updateThemeIcon(e.matches ? 'dark' : 'light');
         }
     });
