@@ -1003,7 +1003,14 @@ html[data-theme="light"] {
     .card {
         padding: 20px;
         border-radius: 28px;
-        min-height: 500px; /* Taller cards to fit one per screen view */
+    }
+
+    .card.boarding.flight {
+        min-height: auto; /* Remove fixed height for flight cards to fit content */
+    }
+
+    .card.boarding.hotel, .card.boarding.itinerary {
+        min-height: 500px; /* Keep taller height for hotel and itinerary cards */
     }
 
     .card-list {
@@ -1041,7 +1048,6 @@ html[data-theme="light"] {
         font-size: 13px;
     }
 
-    /* Make itinerary cards taller on phones */
     .itinerary-card {
         min-height: 600px;
     }
