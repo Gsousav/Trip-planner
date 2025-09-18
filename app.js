@@ -271,12 +271,18 @@ function createFlightCard(flight, isClickable = false) {
         : '';
     flightDiv.innerHTML = `
         <div class="pass-header">
-            <div class="pass-title">
-                ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
-                <span class="route-text">${flight.from}</span>
+            <div class="pass-primary">
+                <div class="depart">
+                    ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                    <span class="city">${flight.from}</span>
+                    <span class="time">${formatDateTimeShort(flight.departure)}</span>
+                </div>
                 <span class="arrow">→</span>
-                ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
-                <span class="route-text">${flight.to}</span>
+                <div class="arrive">
+                    ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                    <span class="city">${flight.to}</span>
+                    <span class="time">${formatDateTimeShort(flight.arrival)}</span>
+                </div>
             </div>
             <div class="pass-subtitle">
                 <span class="airline-chip" role="img" aria-label="${flight.airline}">
@@ -284,10 +290,6 @@ function createFlightCard(flight, isClickable = false) {
                     <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
                 </span>
             </div>
-        </div>
-        <div class="pass-row">
-            <div class="chip">${formatDateTimeShort(flight.departure)}</div>
-            <div class="chip">${formatDateTimeShort(flight.arrival)}</div>
         </div>
         ${detailsHtml ? `<div class="pass-footer">${detailsHtml}</div>` : ''}
     `;
@@ -304,9 +306,16 @@ function createHotelCard(hotel) {
             <div class="pass-title">${hotel.hotelName}</div>
             <div class="pass-subtitle">${hotel.type}</div>
         </div>
-        <div class="pass-row">
-            <div class="chip"><span class="label">Check‑in</span> ${hotel.checkin.includes('T') ? formatDateTime(hotel.checkin) : formatDate(hotel.checkin)}</div>
-            <div class="chip"><span class="label">Check‑out</span> ${hotel.checkout.includes('T') ? formatDateTime(hotel.checkout) : formatDate(hotel.checkout)}</div>
+        <div class="pass-primary">
+            <div class="depart">
+                <span class="label">Check-in</span>
+                <span class="time">${hotel.checkin.includes('T') ? formatDateTime(hotel.checkin) : formatDate(hotel.checkin)}</span>
+            </div>
+            <span class="arrow">→</span>
+            <div class="arrive">
+                <span class="label">Check-out</span>
+                <span class="time">${hotel.checkout.includes('T') ? formatDateTime(hotel.checkout) : formatDate(hotel.checkout)}</span>
+            </div>
         </div>
         <div class="pass-footer address">${hotel.address}</div>
         <div class="pass-actions">
@@ -335,11 +344,12 @@ function createItineraryCard(stop, tripData) {
             const activity = activities.find(act => act.period.trim().toLowerCase() === label);
             if (!activity) {
                 console.warn(`No activity found for ${label} on ${dateStr} in ${stop.city}`);
-                return `<div class="activity-item"><span class="activity-label">Actividad de ${label}</span></div>`;
+                return `<div class="activity-item"><span class="activity-period">${label.charAt(0).toUpperCase() + label.slice(1)}</span><span class="activity-label">No activity defined</span></div>`;
             }
             const { url, displayText } = getActivityLink(activity.description, stop.city);
             return `
             <div class="activity-item" role="listitem" tabindex="0">
+                <span class="activity-period">${label.charAt(0).toUpperCase() + label.slice(1)}</span>
                 ${url ? `
                     <a href="${url}" target="_blank" rel="noopener" class="activity-link" aria-label="${activity.description}">
                         ${displayText}
@@ -510,6 +520,24 @@ function showItineraryForCity(city, tripData) {
     updateHash({ section: 'itinerary', city: slugifyCity(city) });
 }
 
+function populateQuickJump(tripData) {
+    const select = document.getElementById('quick-jump');
+    select.innerHTML = '<option value="">Jump to Itinerary</option>';
+    tripData.itinerary.forEach(stop => {
+        const option = document.createElement('option');
+        option.value = stop.city;
+        option.textContent = stop.city;
+        select.appendChild(option);
+    });
+    select.addEventListener('change', (e) => {
+        const city = e.target.value;
+        if (city) {
+            showItineraryForCity(city, tripData);
+            e.target.value = '';
+        }
+    });
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
     const html = document.documentElement;
     let savedTheme = null;
@@ -530,6 +558,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     const tripData = await loadTripData();
     renderFlights(tripData);
+    populateQuickJump(tripData);
 
     const params = new URLSearchParams(location.hash.slice(1));
     const hashSection = params.get('section');
