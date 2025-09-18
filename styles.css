@@ -372,6 +372,7 @@ body {
 
 .check-label {
     flex: 1;
+    color: #1d1d1f;
 }
 
 .check-item.checked .check-label {
@@ -622,7 +623,7 @@ body {
     }
 
     .pass-subtitle {
-        color: #c7c7cc; /* Improved contrast from #a1a1a6, ratio ~5.9 */
+        color: #c7c7cc;
     }
 
     .chip {
@@ -631,7 +632,7 @@ body {
     }
 
     .chip .label {
-        color: #c7c7cc; /* Improved contrast */
+        color: #c7c7cc;
     }
 
     .pass-footer {
@@ -639,7 +640,7 @@ body {
     }
 
     .layover-highlight {
-        color: #ffcc00; /* Slightly lighter for better contrast, ratio ~10.2 */
+        color: #ffcc00;
     }
 
     .icon-btn {
@@ -653,6 +654,11 @@ body {
 
     .icon-btn:active {
         background: #545456;
+    }
+
+    .itinerary-card.playing {
+        background: rgba(44, 44, 46, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
     .check-item {
@@ -673,7 +679,19 @@ body {
         border-color: #5e5ce6;
     }
 
+    .check-label {
+        color: #f5f5f7;
+    }
+
     .check-item.checked .check-label {
+        color: #c7c7cc;
+    }
+
+    .date-title {
+        color: #f5f5f7;
+    }
+
+    .date-subtitle {
         color: #c7c7cc;
     }
 
@@ -703,7 +721,7 @@ body {
     }
 
     .partial-group-label::before {
-        background: #ffcc00; /* Matches layover-highlight */
+        background: #ffcc00;
     }
 
     .tiny-logo, .tiny-flag {
@@ -721,7 +739,7 @@ body {
 
     .card-detail.route,
     .card-detail.address {
-        color: #5e5ce6; /* Adjusted for contrast, ratio ~5.5 */
+        color: #5e5ce6;
     }
 
     .card-detail.route strong,
@@ -830,6 +848,12 @@ html[data-theme="light"] {
         background: #d4d4d8;
     }
 
+    .itinerary-card.playing {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+    }
+
     .check-item {
         background: #f5f5f7;
         color: #1d1d1f;
@@ -848,7 +872,19 @@ html[data-theme="light"] {
         border-color: #4f46e5;
     }
 
+    .check-label {
+        color: #1d1d1f;
+    }
+
     .check-item.checked .check-label {
+        color: #6e6e73;
+    }
+
+    .date-title {
+        color: #1d1d1f;
+    }
+
+    .date-subtitle {
         color: #6e6e73;
     }
 
@@ -914,8 +950,8 @@ html[data-theme="light"] {
 
     .tabs {
         gap: 6px;
-        padding: 6px 12px; /* Added horizontal padding for centering */
-        justify-content: center; /* Fixed centering */
+        padding: 6px 12px;
+        justify-content: center;
     }
 
     .tab {
