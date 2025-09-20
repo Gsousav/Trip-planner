@@ -1,8 +1,63 @@
+/* Bootstrap-inspired CSS Custom Properties */
+:root {
+    /* Bootstrap Spacing Scale */
+    --bs-spacer: 1rem;
+    --bs-spacer-0: 0;
+    --bs-spacer-1: 0.25rem;
+    --bs-spacer-2: 0.5rem;
+    --bs-spacer-3: 1rem;
+    --bs-spacer-4: 1.5rem;
+    --bs-spacer-5: 3rem;
+    
+    /* Bootstrap Typography Scale */
+    --bs-font-size-base: 1rem;
+    --bs-font-size-sm: 0.875rem;
+    --bs-font-size-lg: 1.125rem;
+    --bs-line-height-base: 1.5;
+    --bs-line-height-sm: 1.25;
+    --bs-line-height-lg: 1.2;
+    
+    /* Bootstrap Colors */
+    --bs-primary: #0d6efd;
+    --bs-primary-rgb: 13, 110, 253;
+    --bs-secondary: #6c757d;
+    --bs-success: #198754;
+    --bs-info: #0dcaf0;
+    --bs-warning: #ffc107;
+    --bs-danger: #dc3545;
+    --bs-light: #f8f9fa;
+    --bs-dark: #212529;
+    
+    /* Bootstrap Border Radius */
+    --bs-border-radius: 0.375rem;
+    --bs-border-radius-sm: 0.25rem;
+    --bs-border-radius-lg: 0.5rem;
+    --bs-border-radius-xl: 1rem;
+    --bs-border-radius-2xl: 2rem;
+    
+    /* Bootstrap Shadows */
+    --bs-box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --bs-box-shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    --bs-box-shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+    
+    /* Touch Target Sizes */
+    --bs-min-touch-target: 44px;
+    --bs-recommended-touch-target: 48px;
+}
+
 /* Reset and Base Styles */
-* {
+*,
+*::before,
+*::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    -webkit-text-size-adjust: 100%;
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 html[data-theme="light"] {
@@ -14,79 +69,151 @@ html[data-theme="dark"] {
 }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-    background: #f5f5f7;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+    font-size: var(--bs-font-size-base);
+    font-weight: 400;
+    line-height: var(--bs-line-height-base);
+    color: #212529;
+    background: var(--bs-light);
     min-height: 100vh;
-    padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
-    color: #1d1d1f;
-    line-height: 1.5;
+    padding: max(var(--bs-spacer-3), env(safe-area-inset-top)) max(var(--bs-spacer-3), env(safe-area-inset-right)) max(var(--bs-spacer-4), env(safe-area-inset-bottom)) max(var(--bs-spacer-3), env(safe-area-inset-left));
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     overflow-x: hidden;
 }
 
-/* Container */
+/* Bootstrap Container */
 .container {
-    max-width: 840px;
+    width: 100%;
+    max-width: 1200px;
     margin: 0 auto;
     background: #ffffff;
-    border-radius: 16px;
-    padding: 16px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+    border-radius: var(--bs-border-radius-xl);
+    padding: var(--bs-spacer-4);
+    box-shadow: var(--bs-box-shadow-lg);
     overflow-x: hidden;
 }
 
-/* Header for theme toggle and quick jump */
+/* Bootstrap Responsive Container */
+@media (min-width: 576px) {
+    .container {
+        max-width: 540px;
+        padding: var(--bs-spacer-5);
+    }
+}
+
+@media (min-width: 768px) {
+    .container {
+        max-width: 720px;
+    }
+}
+
+@media (min-width: 992px) {
+    .container {
+        max-width: 960px;
+    }
+}
+
+@media (min-width: 1200px) {
+    .container {
+        max-width: 1140px;
+    }
+}
+
+/* Bootstrap Header */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 8px;
-    margin-bottom: 12px;
+    padding: var(--bs-spacer-2) 0;
+    margin-bottom: var(--bs-spacer-4);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+/* Bootstrap Form Control */
 .city-select {
-    padding: 10px;
-    border-radius: 12px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: #f5f5f7;
-    font-size: 15px;
+    display: block;
+    width: 100%;
+    max-width: 250px;
+    padding: var(--bs-spacer-2) var(--bs-spacer-3);
+    font-size: var(--bs-font-size-base);
+    font-weight: 400;
+    line-height: var(--bs-line-height-base);
+    color: #212529;
+    background-color: #fff;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right var(--bs-spacer-2) center;
+    background-size: 16px 12px;
+    border: 1px solid #ced4da;
+    border-radius: var(--bs-border-radius);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
     cursor: pointer;
-    max-width: 200px;
+    min-height: var(--bs-min-touch-target);
 }
 
+.city-select:focus {
+    color: #212529;
+    background-color: #fff;
+    border-color: #86b7fe;
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.city-select:disabled {
+    background-color: #e9ecef;
+    opacity: 1;
+}
+
+/* Bootstrap Button */
 .theme-toggle {
     -webkit-appearance: none;
+    -moz-appearance: none;
     appearance: none;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: #f5f5f7;
-    border: none;
-    cursor: pointer;
-    display: flex;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    transition: background-color 0.2s ease, transform 0.1s ease;
+    width: var(--bs-recommended-touch-target);
+    height: var(--bs-recommended-touch-target);
+    padding: var(--bs-spacer-2);
+    font-size: var(--bs-font-size-lg);
+    border-radius: 50%;
+    background-color: var(--bs-light);
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, transform 0.1s ease;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    user-select: none;
 }
 
 .theme-toggle:hover {
-    background: #e5e5ea;
+    background-color: #e2e6ea;
+    border-color: #dae0e5;
+}
+
+.theme-toggle:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 }
 
 .theme-toggle:active {
-    transform: scale(0.95);
+    transform: scale(0.98);
+    background-color: #dae0e5;
+    border-color: #d3d9df;
 }
 
-.theme-toggle:focus-visible {
-    outline: 2px solid #007aff;
-    outline-offset: 2px;
+.theme-toggle:disabled {
+    pointer-events: none;
+    opacity: 0.65;
 }
 
 .theme-icon {
-    font-size: 20px;
+    font-size: 1.25rem;
+    line-height: 1;
 }
 
 /* Sections */
@@ -111,28 +238,52 @@ body {
     }
 }
 
-/* Card List */
+/* Bootstrap Card List */
 .card-list {
     display: flex;
     flex-direction: column;
-    gap: 24px; /* Increased gap for better separation */
+    gap: var(--bs-spacer-4);
+    margin-bottom: var(--bs-spacer-4);
 }
 
-/* Cards */
+@media (min-width: 768px) {
+    .card-list {
+        gap: var(--bs-spacer-5);
+    }
+}
+
+/* Bootstrap Cards */
 .card {
-    background: rgba(255, 255, 255, 0.9);
-    backdrop-filter: blur(10px);
-    border-radius: 24px; /* Larger radius for playing card feel */
-    padding: 24px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08), inset 0 0 0 1px rgba(0, 0, 0, 0.04); /* Added inset border for card edge */
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
     position: relative;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0, 0, 0, 0.125);
+    border-radius: var(--bs-border-radius-xl);
+    padding: var(--bs-spacer-4);
+    box-shadow: var(--bs-box-shadow);
+    transition: transform 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+    cursor: pointer;
     overflow: hidden;
 }
 
 .card:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
+    transform: translateY(-2px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    border-color: rgba(0, 0, 0, 0.175);
+}
+
+.card:focus {
+    outline: 0;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.card:active {
+    transform: translateY(0);
+    box-shadow: var(--bs-box-shadow-sm);
 }
 
 .card.non-clickable {
@@ -281,12 +432,28 @@ body {
     font-size: 12px;
 }
 
+/* Bootstrap Button Group */
 .pass-actions {
     display: flex;
-    gap: 12px;
-    margin-top: 16px;
-    justify-content: flex-start;
-    flex-wrap: wrap;
+    flex-direction: column;
+    gap: var(--bs-spacer-3);
+    margin-top: var(--bs-spacer-4);
+    width: 100%;
+}
+
+/* Desktop: Side by side */
+@media (min-width: 576px) {
+    .pass-actions {
+        flex-direction: row;
+        gap: var(--bs-spacer-3);
+        justify-content: flex-start;
+        align-items: stretch;
+    }
+    
+    .icon-btn {
+        flex: 1;
+        max-width: 180px;
+    }
 }
 
 .icon-btn {
@@ -1119,8 +1286,15 @@ html[data-theme="light"] {
     }
     
     .pass-actions {
-        gap: 8px;
-        margin-top: 20px;
+        flex-direction: column;
+        gap: var(--bs-spacer-3);
+        margin-top: var(--bs-spacer-4);
+    }
+    
+    .icon-btn {
+        width: 100%;
+        max-width: none;
+        justify-content: center;
     }
     
     .icon-img {
