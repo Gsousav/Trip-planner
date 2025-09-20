@@ -930,9 +930,9 @@ function populateQuickJump(tripData) {
 function updateProgressBar(sectionId) {
     const sections = ['flights', 'accommodation', 'itinerary'];
     const sectionLabels = {
-        'flights': '✈️ Vuelos',
-        'accommodation': '🏨 Alojamiento', 
-        'itinerary': '📅 Itinerario'
+        'flights': 'Vuelos',
+        'accommodation': 'Alojamiento', 
+        'itinerary': 'Itinerario'
     };
     const currentIndex = sections.indexOf(sectionId);
     const progress = currentIndex >= 0 ? ((currentIndex + 1) / sections.length) * 100 : 0;
@@ -946,15 +946,12 @@ function updateProgressBar(sectionId) {
             <div class="progress-steps">
                 <div class="progress-step" data-step="flights">
                     <div class="step-dot"></div>
-                    <span class="step-label">✈️</span>
                 </div>
                 <div class="progress-step" data-step="accommodation">
                     <div class="step-dot"></div>
-                    <span class="step-label">🏨</span>
                 </div>
                 <div class="progress-step" data-step="itinerary">
                     <div class="step-dot"></div>
-                    <span class="step-label">📅</span>
                 </div>
             </div>
             <div class="progress-label">${sectionLabels[sectionId] || 'Cargando...'}</div>

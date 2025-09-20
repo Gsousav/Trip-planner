@@ -13,24 +13,26 @@
 <body>
     <div class="container">
         <header class="header">
-            <nav class="main-nav">
-                <button class="nav-btn" data-section="flights">
-                    <span class="nav-icon">✈️</span>
-                    <span class="nav-text">Vuelos</span>
-                </button>
-                <button class="nav-btn" data-section="accommodation">
-                    <span class="nav-icon">🏨</span>
-                    <span class="nav-text">Alojamiento</span>
-                </button>
-                <button class="nav-btn" data-section="itinerary">
-                    <span class="nav-icon">📅</span>
-                    <span class="nav-text">Itinerario</span>
-                </button>
-            </nav>
             <button class="theme-toggle" aria-label="Toggle theme">
                 <span class="theme-icon">🌙</span>
             </button>
         </header>
+
+        <!-- Navigation moved below progress bar -->
+        <nav class="main-nav">
+            <button class="nav-btn" data-section="flights">
+                <span class="nav-icon">✈️</span>
+                <span class="nav-text">Vuelos</span>
+            </button>
+            <button class="nav-btn" data-section="accommodation">
+                <span class="nav-icon">🏨</span>
+                <span class="nav-text">Alojamiento</span>
+            </button>
+            <button class="nav-btn" data-section="itinerary">
+                <span class="nav-icon">📅</span>
+                <span class="nav-text">Itinerario</span>
+            </button>
+        </nav>
 
         <main>
             <section id="flights" class="section active">
