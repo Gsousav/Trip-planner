@@ -769,6 +769,20 @@ function showSection(sectionId, direction = 'right', tripData = null) {
     const currentSection = document.querySelector('.section.active');
     const targetSection = document.getElementById(sectionId);
     
+    // If already in the target section, just re-render the content
+    if (currentSection && currentSection.id === sectionId) {
+        if (tripData) {
+            if (sectionId === 'flights') {
+                renderFlights(tripData);
+            } else if (sectionId === 'accommodation') {
+                showAllAccommodations(tripData);
+            } else if (sectionId === 'itinerary') {
+                showAllItineraries(tripData);
+            }
+        }
+        return;
+    }
+    
     // Add loading state
     targetSection.classList.add('loading');
     
