@@ -1584,3 +1584,30 @@ header .theme-toggle {
     0%, 100% { border-color: var(--card-border); }
     50% { border-color: var(--accent); }
 }
+
+/* Mobile Button Layout Improvements */
+@media (max-width: 768px) {
+    .icon-btn {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: none !important;
+        text-align: center;
+        justify-content: center !important;
+        margin-bottom: 0;
+        min-height: 52px;
+        font-size: 16px;
+        font-weight: 600;
+    }
+    
+    .pass-actions {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: stretch;
+        width: 100%;
+    }
+    
+    /* Ensure proper spacing and layout */
+    .pass-actions .icon-btn:last-child {
+        margin-bottom: 0;
+    }
+}
