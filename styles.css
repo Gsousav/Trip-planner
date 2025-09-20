@@ -640,8 +640,8 @@ body {
     100% { box-shadow: 0 0 0 10px rgba(79, 70, 229, 0); }
 }
 
-/* Tiny round icons for airline logos and flags */
-.tiny-logo, .tiny-flag {
+/* Tiny round icons for flags only */
+.tiny-flag {
     width: 20px;
     height: 20px;
     border-radius: 50%;
@@ -650,29 +650,6 @@ body {
     background: #fff;
     box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
     margin-right: 8px;
-}
-
-.tiny-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    background: #eef2ff;
-    color: #3730a3;
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: .02em;
-    margin-right: 8px;
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity .15s ease;
-}
-
-.tiny-badge.show {
-    opacity: 1;
-    transform: scale(1);
 }
 
 .pass-title .arrow {
@@ -714,49 +691,54 @@ body {
     font-size: 18px;
 }
 
-/* Airline chip (button-like) */
-.airline-chip {
+/* Modern Airline Button - Google Maps/Apple Maps Style */
+.airline-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 12px;
+    background: rgba(79, 70, 229, 0.1);
+    border: 1px solid rgba(79, 70, 229, 0.2);
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #4f46e5;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+.airline-button:hover {
+    background: rgba(79, 70, 229, 0.15);
+    border-color: rgba(79, 70, 229, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+.airline-initials {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 44px;
-    height: 44px;
+    width: 20px;
+    height: 20px;
+    background: #4f46e5;
+    color: white;
     border-radius: 50%;
-    background: transparent;
-    overflow: hidden;
-}
-
-.airline-chip .tiny-logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    object-fit: contain;
-    margin: 0;
-    background: transparent;
-}
-
-.airline-chip .tiny-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 44px;
-    height: 44px;
-    border-radius: 50%;
-    background: transparent;
-    color: #3730a3;
-    font-size: 13px;
+    font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.02em;
-    line-height: 44px;
-    margin: 0;
-    opacity: 0;
-    transform: scale(0.9);
-    transition: opacity .15s ease;
+    flex-shrink: 0;
 }
 
-.airline-chip .tiny-badge.show {
-    opacity: 1;
-    transform: scale(1);
+.airline-name {
+    font-size: 11px;
+    font-weight: 600;
+    color: #4f46e5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 80px;
 }
 
 /* Activity Items */
@@ -963,13 +945,8 @@ body {
         background: #ffcc00;
     }
 
-    .tiny-logo, .tiny-flag {
+    .tiny-flag {
         background: #3a3a3c;
-    }
-
-    .tiny-badge {
-        background: #373739;
-        color: #c7c7cc;
     }
 
     .pass-title .arrow {
@@ -999,6 +976,27 @@ body {
 
     .activity-link {
         color: #5e5ce6;
+    }
+    
+    /* Dark Mode Airline Button */
+    .airline-button {
+        background: rgba(79, 70, 229, 0.2);
+        border-color: rgba(79, 70, 229, 0.4);
+        color: #8b5cf6;
+    }
+    
+    .airline-button:hover {
+        background: rgba(79, 70, 229, 0.3);
+        border-color: rgba(79, 70, 229, 0.5);
+    }
+    
+    .airline-initials {
+        background: #8b5cf6;
+        color: white;
+    }
+    
+    .airline-name {
+        color: #8b5cf6;
     }
 }
 
@@ -1144,13 +1142,8 @@ html[data-theme="light"] {
         background: #ff9500;
     }
 
-    .tiny-logo, .tiny-flag {
+    .tiny-flag {
         background: #fff;
-    }
-
-    .tiny-badge {
-        background: #eef2ff;
-        color: #3730a3;
     }
 
     .pass-title .arrow {
@@ -1180,6 +1173,25 @@ html[data-theme="light"] {
 
     .activity-link {
         color: #4f46e5;
+    }
+    
+    /* Mobile Airline Button Enhancements */
+    .airline-button {
+        padding: 8px 14px;
+        font-size: 13px;
+        border-radius: 22px;
+        box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+    }
+    
+    .airline-initials {
+        width: 24px;
+        height: 24px;
+        font-size: 11px;
+    }
+    
+    .airline-name {
+        font-size: 12px;
+        max-width: 100px;
     }
 }
 
@@ -1445,26 +1457,11 @@ body {
     height: 1.25rem;
 }
 
-.tiny-logo,
 .tiny-flag {
     width: 1rem;
     height: 1rem;
     vertical-align: middle;
     margin-right: 0.25rem;
-}
-
-.tiny-badge {
-    display: none;
-    font-size: 0.75rem;
-    font-weight: 600;
-    padding: 0.25rem;
-    background: var(--accent);
-    color: white;
-    border-radius: 0.25rem;
-}
-
-.tiny-badge.show {
-    display: inline-block;
 }
 
 .layover-highlight {
@@ -2011,7 +2008,7 @@ header .theme-toggle {
     }
     
     .progress-fill {
-        background: linear-gradient(90deg, #007aff 0%, #5ac8fa 50%, #30d158 100%);
+        background: #007aff;
         transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         box-shadow: 0 2px 4px rgba(0, 122, 255, 0.3);
         clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
@@ -2020,8 +2017,8 @@ header .theme-toggle {
     .progress-fill::before {
         border-left: 9px solid transparent;
         border-right: 9px solid transparent;
-        border-top: 6px solid #30d158;
-        border-bottom: 6px solid #30d158;
+        border-top: 6px solid #007aff;
+        border-bottom: 6px solid #007aff;
         right: -2px;
     }
     

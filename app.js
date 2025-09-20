@@ -494,10 +494,10 @@ function createFlightCard(flight, isClickable = false) {
                 </div>
             </div>
             <div class="pass-subtitle">
-                <span class="airline-chip" role="img" aria-label="${flight.airline}">
-                    ${airlineLogo ? `<img class="tiny-logo" src="${airlineLogo}" alt="" referrerpolicy="no-referrer" crossorigin="anonymous" onerror="this.onerror=null; this.style.display='none'; this.nextElementSibling && this.nextElementSibling.classList.add('show');" />` : ''}
-                    <span class="tiny-badge${airlineLogo ? '' : ' show'}" aria-hidden="true">${getAirlineInitials(flight.airline)}</span>
-                </span>
+                <div class="airline-button" role="img" aria-label="${flight.airline}">
+                    <span class="airline-initials">${getAirlineInitials(flight.airline)}</span>
+                    <span class="airline-name">${flight.airline}</span>
+                </div>
             </div>
         </div>
         ${detailsHtml ? `<div class="pass-footer">${detailsHtml}</div>` : ''}
@@ -792,7 +792,6 @@ function showSection(sectionId, direction = 'right') {
     updateHash({ section: sectionId });
     updateProgressBar(sectionId);
     updateBreadcrumb(sectionId);
-    showToast(`Navegando a ${getSectionDisplayName(sectionId)}`, 'success');
 }
 
 function addBackButton(sectionId, onClick, label = 'Volver a Vuelos') {
