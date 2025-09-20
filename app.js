@@ -1010,9 +1010,9 @@ function updateBreadcrumb(sectionId, city = '') {
     }
     
     const breadcrumbItems = [
-        { id: 'flights', label: '✈️ Vuelos', active: sectionId === 'flights' },
-        { id: 'accommodation', label: '🏨 Alojamiento', active: sectionId === 'accommodation' },
-        { id: 'itinerary', label: '📅 Itinerario', active: sectionId === 'itinerary' }
+        { id: 'flights', label: 'Vuelos', active: sectionId === 'flights' },
+        { id: 'accommodation', label: 'Alojamiento', active: sectionId === 'accommodation' },
+        { id: 'itinerary', label: 'Itinerario', active: sectionId === 'itinerary' }
     ];
     
     breadcrumb.innerHTML = breadcrumbItems.map((item, index) => {
