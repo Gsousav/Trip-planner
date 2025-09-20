@@ -645,7 +645,7 @@ function createItineraryCard(stop, tripData) {
     return card;
 }
 
-function renderFlights(tripData) {
+async function renderFlights(tripData) {
     const flightsList = document.getElementById('flightsList');
     
     try {
@@ -656,8 +656,10 @@ function renderFlights(tripData) {
         // Show loading state
         flightsList.innerHTML = '<div class="loading-state">🛫 Cargando vuelos...</div>';
         
-        // Simulate brief loading for UX
-        setTimeout(() => {
+        // Use promise instead of setTimeout for better async handling
+        await new Promise(resolve => setTimeout(resolve, 300));
+        
+        return new Promise((resolve, reject) => {
             try {
                 flightsList.innerHTML = '';
                 
@@ -731,6 +733,8 @@ function renderFlights(tripData) {
                     console.log(`🎉 Renderizado completo: ${mainFlights.length} vuelos principales, ${partialFlights.length} vuelos parciales`);
                 }
                 
+                resolve(); // Resolve the promise when rendering is complete
+                
             } catch (renderError) {
                 console.error('Error crítico en renderizado:', renderError);
                 flightsList.innerHTML = `
@@ -742,8 +746,9 @@ function renderFlights(tripData) {
                     </div>
                 `;
                 showToast('Error renderizando vuelos', 'error');
+                reject(renderError);
             }
-        }, 300); // Brief loading delay for UX
+        });
         
     } catch (criticalError) {
         console.error('Error crítico en renderFlights:', criticalError);
@@ -758,6 +763,7 @@ function renderFlights(tripData) {
             `;
         }
         showToast('Error crítico en la aplicación', 'error');
+        throw criticalError; // Re-throw to let caller handle
     }
 }
 
@@ -858,6 +864,11 @@ function populateQuickJump(tripData) {
 // Enhanced UX Functions
 function updateProgressBar(sectionId) {
     const sections = ['flights', 'accommodation', 'itinerary'];
+    const sectionLabels = {
+        'flights': '✈️ Vuelos',
+        'accommodation': '🏨 Alojamiento', 
+        'itinerary': '📅 Itinerario'
+    };
     const currentIndex = sections.indexOf(sectionId);
     const progress = currentIndex >= 0 ? ((currentIndex + 1) / sections.length) * 100 : 0;
     
@@ -865,12 +876,56 @@ function updateProgressBar(sectionId) {
     if (!progressBar) {
         progressBar = document.createElement('div');
         progressBar.className = 'progress-bar';
-        progressBar.innerHTML = '<div class="progress-fill"></div>';
+        progressBar.innerHTML = `
+            <div class="progress-fill"></div>
+            <div class="progress-steps">
+                <div class="progress-step" data-step="flights">
+                    <div class="step-dot"></div>
+                    <span class="step-label">✈️</span>
+                </div>
+                <div class="progress-step" data-step="accommodation">
+                    <div class="step-dot"></div>
+                    <span class="step-label">🏨</span>
+                </div>
+                <div class="progress-step" data-step="itinerary">
+                    <div class="step-dot"></div>
+                    <span class="step-label">📅</span>
+                </div>
+            </div>
+            <div class="progress-label">${sectionLabels[sectionId] || 'Cargando...'}</div>
+        `;
         document.body.prepend(progressBar);
     }
     
     const progressFill = progressBar.querySelector('.progress-fill');
+    const progressLabel = progressBar.querySelector('.progress-label');
+    const progressSteps = progressBar.querySelectorAll('.progress-step');
+    
+    // Update progress fill with smooth animation
     progressFill.style.width = progress + '%';
+    
+    // Update current section label
+    if (progressLabel) {
+        progressLabel.textContent = sectionLabels[sectionId] || 'Cargando...';
+        progressLabel.classList.add('updating');
+        setTimeout(() => progressLabel.classList.remove('updating'), 300);
+    }
+    
+    // Update step indicators
+    progressSteps.forEach((step, index) => {
+        const stepSection = step.getAttribute('data-step');
+        if (sections.indexOf(stepSection) <= currentIndex) {
+            step.classList.add('completed');
+        } else {
+            step.classList.remove('completed');
+        }
+        
+        if (stepSection === sectionId) {
+            step.classList.add('current');
+        } else {
+            step.classList.remove('current');
+        }
+    });
 }
 
 function updateBreadcrumb(sectionId, city = '') {
@@ -906,15 +961,31 @@ function updateBreadcrumb(sectionId, city = '') {
 }
 
 function showToast(message, type = 'info') {
+    // Remove any existing toasts to prevent overlap
+    const existingToasts = document.querySelectorAll('.toast');
+    existingToasts.forEach(toast => {
+        toast.classList.remove('show');
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 100);
+    });
+    
+    // Create new toast
     const toast = document.createElement('div');
     toast.className = `toast ${type}`;
     toast.textContent = message;
     document.body.appendChild(toast);
     
-    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => toast.classList.add('show'), 150);
     setTimeout(() => {
         toast.classList.remove('show');
-        setTimeout(() => document.body.removeChild(toast), 300);
+        setTimeout(() => {
+            if (toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
+        }, 300);
     }, 3000);
 }
 
@@ -1069,30 +1140,48 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
     }
 
-    const tripData = await loadTripData();
-    renderFlights(tripData);
-    populateQuickJump(tripData);
-    
-    // Initialize enhanced UX features
+    // Initialize enhanced UX features first
     createFloatingActionButton();
     addKeyboardShortcuts();
     updateProgressBar('flights');
     updateBreadcrumb('flights');
     addHeaderContext('flights');
 
+    // Load data and render flights
+    const tripData = await loadTripData();
+    populateQuickJump(tripData);
+    
+    // Ensure flights section is properly active and render flights
+    const flightsSection = document.getElementById('flights');
+    if (flightsSection) {
+        // Make sure flights section is visible
+        flightsSection.classList.add('active');
+        // Remove active class from other sections
+        document.querySelectorAll('.section').forEach(section => {
+            if (section.id !== 'flights') {
+                section.classList.remove('active');
+            }
+        });
+    }
+    
+    // Render flights after ensuring section is active
+    await renderFlights(tripData);
+
+    // Handle URL hash navigation
     const params = new URLSearchParams(location.hash.slice(1));
     const hashSection = params.get('section');
     const hashCity = params.get('city');
-    let initialSection = hashSection || 'flights';
-    if (initialSection === 'flights') {
-        showSection('flights');
-    } else if (initialSection === 'accommodation' && hashCity) {
-        const city = hashCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        showAccommodationForCity(city, tripData);
-    } else if (initialSection === 'itinerary' && hashCity) {
-        const city = hashCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-        showItineraryForCity(city, tripData);
-    } else {
-        showSection('flights');
+    
+    if (hashSection && hashSection !== 'flights') {
+        if (hashSection === 'accommodation' && hashCity) {
+            const city = hashCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            showAccommodationForCity(city, tripData);
+        } else if (hashSection === 'itinerary' && hashCity) {
+            const city = hashCity.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            showItineraryForCity(city, tripData);
+        } else {
+            showSection(hashSection);
+        }
     }
+    // If no hash or flights hash, flights section is already active and rendered
 });
