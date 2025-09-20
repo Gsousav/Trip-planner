@@ -112,10 +112,11 @@ function slugifyCity(name) {
 
 function getCityForHotel(hotel) {
     const name = (hotel.hotelName || '').toLowerCase();
-    if (name.includes('madrid')) return 'Madrid';
-    if (name.includes('cala')) return 'Mallorca';
-    if (name.includes('london')) return 'London';
-    if (name.includes('amsterdam') || (hotel.address || '').toLowerCase().includes('amsterdam')) return 'Amsterdam';
+    const address = (hotel.address || '').toLowerCase();
+    if (name.includes('madrid') || address.includes('madrid')) return 'Madrid';
+    if (name.includes('cala') || address.includes('mallorca')) return 'Mallorca';
+    if (name.includes('london') || address.includes('london') || address.includes('gran londres')) return 'London';
+    if (name.includes('amsterdam') || address.includes('amsterdam')) return 'Amsterdam';
     return hotel.hotelName || 'Itinerary';
 }
 

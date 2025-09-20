@@ -64,7 +64,7 @@
     "hotels": [
         {
             "id": 1,
-            "hotelName": "Madrid",
+            "hotelName": "Madrid Stay",
             "type": "Airbnb",
             "address": "Calle de las Infantas, 34, Madrid",
             "checkin": "2025-11-02T14:00:00",
@@ -73,7 +73,7 @@
         },
         {
             "id": 2,
-            "hotelName": "Cala d'Or",
+            "hotelName": "Cala d'Or Stay",
             "type": "Airbnb",
             "address": "Carrer de sa Vinya, 10, Cala d'Or, Mallorca",
             "checkin": "2025-11-04T15:00:00",
@@ -83,10 +83,10 @@
         {
             "id": 3,
             "hotelName": "London Stay",
-            "type": "Not defined",
-            "address": "Not defined",
-            "checkin": "2025-11-08",
-            "checkout": "2025-11-13",
+            "type": "Airbnb",
+            "address": "Harold Estate, Page's Walk 63, Gran Londres, Inglaterra SE1 4HW, Reino Unido",
+            "checkin": "2025-11-08T15:00:00",
+            "checkout": "2025-11-13T11:00:00",
             "url": ""
         },
         {
@@ -278,11 +278,11 @@
                         },
                         {
                             "period": "tarde",
-                            "description": "Tour en Warner Bros. Studio - The Making of Harry Potter al mediodía."
+                            "description": "Tour completo en Warner Bros. Studio - The Making of Harry Potter - toda una tarde dedicada a la experiencia mágica."
                         },
                         {
                             "period": "noche",
-                            "description": "Cena en Soho y exploración de la vida nocturna."
+                            "description": "Regreso del tour de Harry Potter y cena relajada en Londres."
                         }
                     ]
                 },
@@ -291,15 +291,15 @@
                     "activities": [
                         {
                             "period": "mañana",
-                            "description": "Visita al British Museum."
+                            "description": "Visita al British Museum - enfocándose en las colecciones de Egipto y Mesopotamia, que están entre las mejores del mundo."
                         },
                         {
                             "period": "tarde",
-                            "description": "Paseo por Covent Garden y mercado."
+                            "description": "Visita al Borough Market - uno de los mercados gastronómicos más famosos de Londres para degustar productos locales."
                         },
                         {
                             "period": "noche",
-                            "description": "Espectáculo en el West End."
+                            "description": "Paseo por lugares tradicionales e icónicos de Londres, explorando la ciudad a pie."
                         }
                     ]
                 },
