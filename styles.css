@@ -697,21 +697,22 @@ body {
     align-items: center;
     gap: 8px;
     padding: 6px 12px;
-    background: rgba(79, 70, 229, 0.1);
-    border: 1px solid rgba(79, 70, 229, 0.2);
+    background: rgba(29, 29, 31, 0.08);
+    border: 1px solid rgba(29, 29, 31, 0.15);
     border-radius: 20px;
     font-size: 12px;
     font-weight: 600;
-    color: #4f46e5;
+    color: #000000;
     transition: all 0.2s ease;
     cursor: pointer;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
     backdrop-filter: blur(10px);
 }
 
 .airline-button:hover {
-    background: rgba(79, 70, 229, 0.15);
-    border-color: rgba(79, 70, 229, 0.3);
+    background: rgba(29, 29, 31, 0.12);
+    border-color: rgba(29, 29, 31, 0.25);
+    color: #000000;
     transform: translateY(-1px);
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
@@ -722,7 +723,7 @@ body {
     justify-content: center;
     width: 20px;
     height: 20px;
-    background: #4f46e5;
+    background: #1d1d1f;
     color: white;
     border-radius: 50%;
     font-size: 10px;
@@ -734,7 +735,7 @@ body {
 .airline-name {
     font-size: 11px;
     font-weight: 600;
-    color: #4f46e5;
+    color: #000000;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -980,23 +981,24 @@ body {
     
     /* Dark Mode Airline Button */
     .airline-button {
-        background: rgba(79, 70, 229, 0.2);
-        border-color: rgba(79, 70, 229, 0.4);
-        color: #8b5cf6;
+        background: rgba(255, 255, 255, 0.12);
+        border-color: rgba(255, 255, 255, 0.2);
+        color: #000000;
     }
     
     .airline-button:hover {
-        background: rgba(79, 70, 229, 0.3);
-        border-color: rgba(79, 70, 229, 0.5);
+        background: rgba(255, 255, 255, 0.18);
+        border-color: rgba(255, 255, 255, 0.3);
+        color: #000000;
     }
     
     .airline-initials {
-        background: #8b5cf6;
-        color: white;
+        background: #f5f5f7;
+        color: #1c1c1e;
     }
     
     .airline-name {
-        color: #8b5cf6;
+        color: #000000;
     }
 }
 
@@ -1180,7 +1182,9 @@ html[data-theme="light"] {
         padding: 8px 14px;
         font-size: 13px;
         border-radius: 22px;
-        box-shadow: 0 2px 4px rgba(79, 70, 229, 0.2);
+        box-shadow: 0 2px 4px rgba(29, 29, 31, 0.15);
+        background: rgba(29, 29, 31, 0.12);
+        border-color: rgba(29, 29, 31, 0.2);
     }
     
     .airline-initials {
@@ -1192,6 +1196,7 @@ html[data-theme="light"] {
     .airline-name {
         font-size: 12px;
         max-width: 100px;
+        color: #000000;
     }
 }
 
@@ -1860,11 +1865,12 @@ header .theme-toggle {
     top: 0;
     left: 0;
     width: 100%;
-    height: 6px;
-    background: rgba(0, 122, 255, 0.15);
+    height: 12px;
+    background: rgba(0, 122, 255, 0.25);
     z-index: 1000;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
     backdrop-filter: blur(10px);
+    border-bottom: 2px solid rgba(0, 122, 255, 0.3);
 }
 
 .progress-fill {
@@ -1874,20 +1880,21 @@ header .theme-toggle {
     transition: width 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
     position: relative;
     overflow: visible;
-    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 50%, calc(100% - 12px) 100%, 0 100%);
+    clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+    box-shadow: 0 2px 4px rgba(0, 122, 255, 0.3);
 }
 
 .progress-fill::before {
     content: '';
     position: absolute;
-    right: -1px;
+    right: -2px;
     top: 0;
     width: 0;
     height: 0;
-    border-left: 6px solid transparent;
-    border-right: 6px solid transparent;
-    border-top: 3px solid #007aff;
-    border-bottom: 3px solid #007aff;
+    border-left: 9px solid transparent;
+    border-right: 9px solid transparent;
+    border-top: 6px solid #007aff;
+    border-bottom: 6px solid #007aff;
     transform: translateY(-50%);
     top: 50%;
 }
@@ -1919,7 +1926,7 @@ header .theme-toggle {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 2%;
+    padding: 0 3%;
     z-index: 2;
 }
 
@@ -1928,26 +1935,39 @@ header .theme-toggle {
     display: flex;
     flex-direction: column;
     align-items: center;
-    opacity: 0.6;
+    opacity: 0.8;
     transition: all 0.3s ease;
+    padding: 10px;
+    border-radius: 14px;
+    min-width: 52px;
+    min-height: 52px;
+    justify-content: center;
+}
+
+.progress-step:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.1);
+    transform: scale(1.05);
 }
 
 .step-dot {
-    width: 12px;
-    height: 12px;
+    width: 20px;
+    height: 20px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.8);
-    border: 2px solid rgba(0, 122, 255, 0.3);
+    background: rgba(255, 255, 255, 0.95);
+    border: 3px solid rgba(0, 122, 255, 0.5);
     transition: all 0.3s ease;
-    margin-bottom: 4px;
+    margin-bottom: 8px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
 .step-label {
-    font-size: 10px;
-    color: rgba(255, 255, 255, 0.9);
-    font-weight: 600;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
-    display: none; /* Hidden by default, shown on mobile */
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.98);
+    font-weight: 800;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    display: block;
+    line-height: 1;
 }
 
 .progress-step.completed .step-dot {
@@ -2001,41 +2021,50 @@ header .theme-toggle {
 /* Mobile-specific enhancements */
 @media (max-width: 768px) {
     .progress-bar {
-        height: 12px;
-        background: rgba(0, 122, 255, 0.25);
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        height: 16px;
+        background: rgba(0, 122, 255, 0.3);
+        box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+        border-bottom: 3px solid rgba(0, 122, 255, 0.4);
     }
     
     .progress-fill {
         background: #007aff;
         transition: width 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-        box-shadow: 0 2px 4px rgba(0, 122, 255, 0.3);
-        clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 50%, calc(100% - 18px) 100%, 0 100%);
+        box-shadow: 0 3px 6px rgba(0, 122, 255, 0.4);
+        clip-path: polygon(0 0, calc(100% - 24px) 0, 100% 50%, calc(100% - 24px) 100%, 0 100%);
     }
     
     .progress-fill::before {
-        border-left: 9px solid transparent;
-        border-right: 9px solid transparent;
-        border-top: 6px solid #007aff;
-        border-bottom: 6px solid #007aff;
-        right: -2px;
+        border-left: 12px solid transparent;
+        border-right: 12px solid transparent;
+        border-top: 8px solid #007aff;
+        border-bottom: 8px solid #007aff;
+        right: -3px;
     }
     
     .progress-steps {
-        padding: 0 4%;
+        padding: 0 2%;
+    }
+    
+    .progress-step {
+        min-width: 64px;
+        min-height: 64px;
+        padding: 14px;
+        border-radius: 18px;
     }
     
     .step-dot {
-        width: 16px;
-        height: 16px;
-        border-width: 3px;
+        width: 24px;
+        height: 24px;
+        border-width: 4px;
+        margin-bottom: 10px;
     }
     
     .step-label {
         display: block;
-        font-size: 12px;
-        margin-top: 2px;
+        font-size: 16px;
+        margin-top: 6px;
+        font-weight: 800;
     }
     
     .progress-label {

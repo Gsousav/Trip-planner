@@ -910,7 +910,7 @@ function updateProgressBar(sectionId) {
         setTimeout(() => progressLabel.classList.remove('updating'), 300);
     }
     
-    // Update step indicators
+    // Update step indicators and add click handlers
     progressSteps.forEach((step, index) => {
         const stepSection = step.getAttribute('data-step');
         if (sections.indexOf(stepSection) <= currentIndex) {
@@ -924,6 +924,17 @@ function updateProgressBar(sectionId) {
         } else {
             step.classList.remove('current');
         }
+        
+        // Add click handler for navigation
+        step.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (stepSection !== sectionId) {
+                showSection(stepSection, stepSection === 'flights' ? 'left' : 'right');
+            }
+        });
+        
+        // Make it clear it's clickable
+        step.style.cursor = 'pointer';
     });
 }
 
