@@ -33,7 +33,6 @@ async function loadTripData(retries = 3, delay = 1000) {
             }
             
             console.log('✅ Datos del viaje cargados exitosamente:', data);
-            showToast('Datos cargados correctamente', 'success');
             return data;
             
         } catch (error) {
@@ -46,7 +45,7 @@ async function loadTripData(retries = 3, delay = 1000) {
             }
             
             // Wait before retry
-            showToast(`Error cargando datos. Reintentando... (${attempt}/${retries})`, 'error');
+            console.log(`Error cargando datos. Reintentando... (${attempt}/${retries})`);
             await new Promise(resolve => setTimeout(resolve, delay * attempt));
         }
     }
@@ -90,7 +89,7 @@ function handleDataLoadError(error) {
     if (hotelsList) hotelsList.innerHTML = errorMessage.replace('datos del viaje', 'alojamientos');
     if (itineraryList) itineraryList.innerHTML = errorMessage.replace('datos del viaje', 'itinerario');
     
-    showToast('Error crítico: No se pudieron cargar los datos', 'error');
+    console.error('Error crítico: No se pudieron cargar los datos');
 }
 
 // Provide default data structure as fallback
@@ -690,7 +689,6 @@ async function renderFlights(tripData) {
                                 showAccommodationForCity(city, tripData);
                             } catch (clickError) {
                                 console.error('Error al hacer click en vuelo:', clickError);
-                                showToast('Error al navegar al alojamiento', 'error');
                             }
                         });
                         
@@ -745,7 +743,7 @@ async function renderFlights(tripData) {
                         <button onclick="location.reload()" class="retry-btn">🔄 Reintentar</button>
                     </div>
                 `;
-                showToast('Error renderizando vuelos', 'error');
+                console.error('Error renderizando vuelos');
                 reject(renderError);
             }
         });
@@ -762,12 +760,12 @@ async function renderFlights(tripData) {
                 </div>
             `;
         }
-        showToast('Error crítico en la aplicación', 'error');
+        console.error('Error crítico en la aplicación');
         throw criticalError; // Re-throw to let caller handle
     }
 }
 
-function showSection(sectionId, direction = 'right') {
+function showSection(sectionId, direction = 'right', tripData = null) {
     const currentSection = document.querySelector('.section.active');
     const targetSection = document.getElementById(sectionId);
     
@@ -789,9 +787,21 @@ function showSection(sectionId, direction = 'right') {
         }, 400);
     }, 100);
     
+    // Update navigation button states
+    updateNavigationButtons(sectionId);
+    
     updateHash({ section: sectionId });
     updateProgressBar(sectionId);
     updateBreadcrumb(sectionId);
+    
+    // Show all destinations when clicking navigation buttons
+    if (tripData) {
+        if (sectionId === 'accommodation') {
+            showAllAccommodations(tripData);
+        } else if (sectionId === 'itinerary') {
+            showAllItineraries(tripData);
+        }
+    }
 }
 
 function addBackButton(sectionId, onClick, label = 'Volver a Vuelos') {
@@ -824,6 +834,42 @@ function showAccommodationForCity(city, tripData) {
     addHeaderContext('accommodation', city);
 }
 
+function showAllAccommodations(tripData) {
+    showSection('accommodation');
+    const hotelsList = document.getElementById('hotelsList');
+    hotelsList.innerHTML = '';
+    
+    // Get all hotels and group by city
+    const hotelsByCity = {};
+    tripData.hotels.forEach(hotel => {
+        const city = getCityForHotel(hotel);
+        if (!hotelsByCity[city]) {
+            hotelsByCity[city] = [];
+        }
+        hotelsByCity[city].push(hotel);
+    });
+    
+    // Create cards for all cities
+    Object.keys(hotelsByCity).forEach(city => {
+        const cityHeader = document.createElement('div');
+        cityHeader.className = 'city-header';
+        cityHeader.innerHTML = `<h3>${city}</h3>`;
+        hotelsList.appendChild(cityHeader);
+        
+        hotelsByCity[city].forEach(hotel => {
+            const hotelDiv = createHotelCard(hotel);
+            hotelDiv.addEventListener('click', () => {
+                showItineraryForCity(city, tripData);
+            });
+            hotelsList.appendChild(hotelDiv);
+        });
+    });
+    
+    addBackButton('accommodation', () => showSection('flights', 'left'), 'Volver a Vuelos');
+    updateHash({ section: 'accommodation' });
+    addHeaderContext('accommodation');
+}
+
 function showItineraryForCity(city, tripData) {
     showSection('itinerary');
     const itineraryList = document.getElementById('itineraryList');
@@ -840,6 +886,26 @@ function showItineraryForCity(city, tripData) {
     addBackButton('itinerary', () => showAccommodationForCity(city, tripData), 'Volver al Alojamiento');
     updateHash({ section: 'itinerary', city: slugifyCity(city) });
     addHeaderContext('itinerary', city);
+}
+
+function showAllItineraries(tripData) {
+    showSection('itinerary');
+    const itineraryList = document.getElementById('itineraryList');
+    itineraryList.innerHTML = '';
+    
+    // Create cards for all cities
+    tripData.itinerary.forEach((stop, index) => {
+        const card = createItineraryCard(stop, tripData);
+        if (index === 0) {
+            card.classList.add('highlight');
+            setTimeout(() => card.classList.remove('highlight'), 1600);
+        }
+        itineraryList.appendChild(card);
+    });
+    
+    addBackButton('itinerary', () => showSection('flights', 'left'), 'Volver a Vuelos');
+    updateHash({ section: 'itinerary' });
+    addHeaderContext('itinerary');
 }
 
 function populateQuickJump(tripData) {
@@ -1043,7 +1109,13 @@ function createFloatingActionButton() {
         action.addEventListener('click', (e) => {
             e.preventDefault();
             const targetSection = action.dataset.section;
-            showSection(targetSection);
+            // Get tripData from global scope or pass it as parameter
+            const tripData = window.currentTripData;
+            if (tripData) {
+                showSection(targetSection, 'right', tripData);
+            } else {
+                showSection(targetSection);
+            }
             isOpen = false;
             quickActions.classList.remove('show');
             fab.style.transform = 'rotate(0deg)';
@@ -1096,6 +1168,18 @@ function addKeyboardShortcuts() {
                 e.preventDefault();
                 showSection(sections[currentIndex - 1], 'left');
             }
+        }
+    });
+}
+
+function updateNavigationButtons(activeSectionId) {
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+        const sectionId = btn.getAttribute('data-section');
+        if (sectionId === activeSectionId) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
         }
     });
 }
@@ -1159,7 +1243,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // Load data and render flights
     const tripData = await loadTripData();
-    populateQuickJump(tripData);
+    
+    // Store tripData globally for FAB access
+    window.currentTripData = tripData;
+    
+    // Add navigation button event listeners
+    document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            e.preventDefault();
+            const sectionId = btn.getAttribute('data-section');
+            showSection(sectionId, 'right', tripData);
+        });
+    });
     
     // Ensure flights section is properly active and render flights
     const flightsSection = document.getElementById('flights');
