@@ -1,28 +1,111 @@
 // app.js
 
-async function loadTripData() {
-    try {
-        const response = await fetch('tripData.json');
-        if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const data = await response.json();
-        console.log('Loaded tripData:', data);
-        return data;
-    } catch (error) {
-        console.error('Failed to load tripData.json:', error);
-        const flightsList = document.getElementById('flightsList');
-        const hotelsList = document.getElementById('hotelsList');
-        const itineraryList = document.getElementById('itineraryList');
-        if (flightsList) flightsList.innerHTML = '<div class="empty-state"><h3>Error loading flight data</h3></div>';
-        if (hotelsList) hotelsList.innerHTML = '<div class="empty-state"><h3>Error loading hotel data</h3></div>';
-        if (itineraryList) itineraryList.innerHTML = '<div class="empty-state"><h3>Error loading itinerary data</h3></div>';
-        return { flights: [], hotels: [], itinerary: [] };
+// Robust data loading with retry mechanism and validation
+async function loadTripData(retries = 3, delay = 1000) {
+    for (let attempt = 1; attempt <= retries; attempt++) {
+        try {
+            console.log(`Cargando datos del viaje (intento ${attempt}/${retries})...`);
+            
+            // Add timeout to prevent hanging
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
+            
+            const response = await fetch('tripData.json', {
+                signal: controller.signal,
+                cache: 'no-cache',
+                headers: {
+                    'Cache-Control': 'no-cache',
+                    'Pragma': 'no-cache'
+                }
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                throw new Error(`Error HTTP: ${response.status} - ${response.statusText}`);
+            }
+            
+            const data = await response.json();
+            
+            // Validate data structure
+            if (!validateTripData(data)) {
+                throw new Error('Estructura de datos inválida');
+            }
+            
+            console.log('✅ Datos del viaje cargados exitosamente:', data);
+            showToast('Datos cargados correctamente', 'success');
+            return data;
+            
+        } catch (error) {
+            console.warn(`❌ Intento ${attempt} falló:`, error.message);
+            
+            if (attempt === retries) {
+                console.error('🚨 Falló la carga de datos después de todos los intentos:', error);
+                handleDataLoadError(error);
+                return getDefaultTripData();
+            }
+            
+            // Wait before retry
+            showToast(`Error cargando datos. Reintentando... (${attempt}/${retries})`, 'error');
+            await new Promise(resolve => setTimeout(resolve, delay * attempt));
+        }
     }
 }
 
+// Validate trip data structure
+function validateTripData(data) {
+    if (!data || typeof data !== 'object') return false;
+    if (!Array.isArray(data.flights)) return false;
+    if (!Array.isArray(data.hotels)) return false;
+    if (!Array.isArray(data.itinerary)) return false;
+    
+    // Validate flights have required fields
+    for (const flight of data.flights) {
+        if (!flight.id || !flight.airline || !flight.from || !flight.to) {
+            console.error('Vuelo inválido encontrado:', flight);
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+// Handle data loading errors gracefully
+function handleDataLoadError(error) {
+    const flightsList = document.getElementById('flightsList');
+    const hotelsList = document.getElementById('hotelsList');
+    const itineraryList = document.getElementById('itineraryList');
+    
+    const errorMessage = `
+        <div class="error-state">
+            <div class="error-icon">⚠️</div>
+            <h3>Error al cargar los datos</h3>
+            <p>No se pudieron cargar los datos del viaje.</p>
+            <p class="error-details">${error.message}</p>
+            <button onclick="location.reload()" class="retry-btn">🔄 Reintentar</button>
+        </div>
+    `;
+    
+    if (flightsList) flightsList.innerHTML = errorMessage;
+    if (hotelsList) hotelsList.innerHTML = errorMessage.replace('datos del viaje', 'alojamientos');
+    if (itineraryList) itineraryList.innerHTML = errorMessage.replace('datos del viaje', 'itinerario');
+    
+    showToast('Error crítico: No se pudieron cargar los datos', 'error');
+}
+
+// Provide default data structure as fallback
+function getDefaultTripData() {
+    return {
+        flights: [],
+        hotels: [],
+        itinerary: []
+    };
+}
+
 function formatDateTime(dateTimeStr) {
-    if (!dateTimeStr) return 'Not defined';
+    if (!dateTimeStr) return 'No definido';
     const date = new Date(dateTimeStr);
-    return date.toLocaleString('en-GB', {
+    return date.toLocaleString('es-PE', {
         weekday: 'short',
         day: '2-digit',
         month: 'short',
@@ -34,19 +117,19 @@ function formatDateTime(dateTimeStr) {
 }
 
 function formatDateTimeShort(dateTimeStr) {
-    if (!dateTimeStr) return 'Not defined';
+    if (!dateTimeStr) return 'No definido';
     const date = new Date(dateTimeStr);
-    const weekday = date.toLocaleString('en-GB', { weekday: 'short' });
-    const day = date.toLocaleString('en-GB', { day: '2-digit' });
-    const month = date.toLocaleString('en-GB', { month: 'short' });
-    const time = date.toLocaleString('en-GB', { hour: '2-digit', minute: '2-digit', hour12: false });
+    const weekday = date.toLocaleString('es-PE', { weekday: 'short' });
+    const day = date.toLocaleString('es-PE', { day: '2-digit' });
+    const month = date.toLocaleString('es-PE', { month: 'short' });
+    const time = date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
     return `${weekday}, ${day} ${month}, ${time}`;
 }
 
 function formatDate(dateStr) {
-    if (!dateStr) return 'Not defined';
+    if (!dateStr) return 'No definido';
     const date = new Date(dateStr);
-    return date.toLocaleString('en-GB', {
+    return date.toLocaleString('es-PE', {
         weekday: 'short',
         day: '2-digit',
         month: 'short',
@@ -56,7 +139,7 @@ function formatDate(dateStr) {
 
 function formatDayShort(dateObj) {
     if (!(dateObj instanceof Date)) return '';
-    return dateObj.toLocaleDateString('en-GB', { weekday: 'short', day: '2-digit', month: 'short' });
+    return dateObj.toLocaleDateString('es-PE', { weekday: 'short', day: '2-digit', month: 'short' });
 }
 
 function toStartOfDay(dateLike) {
@@ -221,40 +304,165 @@ function updateThemeIcon(theme) {
 
 function getActivityLink(description, city) {
     const desc = description.toLowerCase();
-    // Specific venues or events
-    if (desc.includes('casa lucio')) {
-        return { url: 'https://casalucio.es', displayText: 'Casa Lucio' };
+    const cityLower = city.toLowerCase();
+    
+    // === MADRID ACTIVITIES ===
+    if (cityLower.includes('madrid')) {
+        if (desc.includes('casa lucio')) {
+            return { url: 'https://casalucio.es', displayText: 'Casa Lucio' };
+        }
+        if (desc.includes('parque del retiro')) {
+            return { url: createGoogleMapsLink('Parque del Retiro, Madrid, Spain'), displayText: 'Parque del Retiro' };
+        }
+        if (desc.includes('palacio de cristal')) {
+            return { url: createGoogleMapsLink('Palacio de Cristal, Parque del Retiro, Madrid'), displayText: 'Palacio de Cristal' };
+        }
+        if (desc.includes('puerta de alcalá')) {
+            return { url: createGoogleMapsLink('Puerta de Alcalá, Madrid, Spain'), displayText: 'Puerta de Alcalá' };
+        }
+        if (desc.includes('plaza mayor')) {
+            return { url: createGoogleMapsLink('Plaza Mayor, Madrid, Spain'), displayText: 'Plaza Mayor' };
+        }
+        if (desc.includes('mercado de san miguel')) {
+            return { url: createGoogleMapsLink('Mercado de San Miguel, Madrid, Spain'), displayText: 'Mercado de San Miguel' };
+        }
+        if (desc.includes('catedral de la almudena')) {
+            return { url: createGoogleMapsLink('Catedral de la Almudena, Madrid, Spain'), displayText: 'Catedral de la Almudena' };
+        }
+        if (desc.includes('palacio real')) {
+            return { url: createGoogleMapsLink('Palacio Real de Madrid, Spain'), displayText: 'Palacio Real' };
+        }
+        if (desc.includes('puerta del sol')) {
+            return { url: createGoogleMapsLink('Puerta del Sol, Madrid, Spain'), displayText: 'Puerta del Sol' };
+        }
+        if (desc.includes('gran vía')) {
+            return { url: createGoogleMapsLink('Gran Vía, Madrid, Spain'), displayText: 'Gran Vía' };
+        }
+        if (desc.includes('barrio de las letras')) {
+            return { url: createGoogleMapsLink('Barrio de las Letras, Madrid, Spain'), displayText: 'Barrio de las Letras' };
+        }
+        if (desc.includes('chueca')) {
+            return { url: createGoogleMapsLink('Chueca, Madrid, Spain'), displayText: 'Chueca' };
+        }
     }
-    if (desc.includes('harry potter') && desc.includes('studio tour')) {
-        return { url: 'https://www.wbstudiotour.co.uk', displayText: 'Harry Potter Warner Bros. Studio Tour' };
+    
+    // === MALLORCA ACTIVITIES ===
+    if (cityLower.includes('mallorca')) {
+        if (desc.includes('cala gran')) {
+            return { url: createGoogleMapsLink('Cala Gran, Cala d\'Or, Mallorca, Spain'), displayText: 'Cala Gran' };
+        }
+        if (desc.includes('cala esmeralda')) {
+            return { url: createGoogleMapsLink('Cala Esmeralda, Cala d\'Or, Mallorca, Spain'), displayText: 'Cala Esmeralda' };
+        }
+        if (desc.includes('mondragó')) {
+            return { url: createGoogleMapsLink('Parque Natural de Mondragó, Mallorca, Spain'), displayText: 'Parque Natural de Mondragó' };
+        }
+        if (desc.includes('cuevas del drach')) {
+            return { url: createGoogleMapsLink('Cuevas del Drach, Porto Cristo, Mallorca, Spain'), displayText: 'Cuevas del Drach' };
+        }
+        if (desc.includes('vall d\'or golf')) {
+            return { url: createGoogleMapsLink('Vall d\'Or Golf, Mallorca, Spain'), displayText: 'Vall d\'Or Golf' };
+        }
+        if (desc.includes('es fortí')) {
+            return { url: createGoogleMapsLink('Es Fortí, Cala d\'Or, Mallorca, Spain'), displayText: 'Es Fortí' };
+        }
+        if (desc.includes('cala d\'or')) {
+            return { url: createGoogleMapsLink('Cala d\'Or, Mallorca, Spain'), displayText: 'Cala d\'Or' };
+        }
     }
-    if (desc.includes('ceppi')) {
-        return { url: createGoogleMapsLink('Ceppi’s, Amsterdam'), displayText: 'Ceppi’s' };
+    
+    // === LONDON ACTIVITIES ===
+    if (cityLower.includes('london')) {
+        if (desc.includes('harry potter') && desc.includes('studio')) {
+            return { url: 'https://www.wbstudiotour.co.uk', displayText: 'Warner Bros. Studio Tour London' };
+        }
+        if (desc.includes('british museum')) {
+            return { url: 'https://www.britishmuseum.org', displayText: 'British Museum' };
+        }
+        if (desc.includes('borough market')) {
+            return { url: createGoogleMapsLink('Borough Market, London, UK'), displayText: 'Borough Market' };
+        }
+        if (desc.includes('buckingham')) {
+            return { url: createGoogleMapsLink('Buckingham Palace, London, UK'), displayText: 'Buckingham Palace' };
+        }
+        if (desc.includes('torre de londres')) {
+            return { url: createGoogleMapsLink('Tower of London, UK'), displayText: 'Tower of London' };
+        }
+        if (desc.includes('puente de la torre')) {
+            return { url: createGoogleMapsLink('Tower Bridge, London, UK'), displayText: 'Tower Bridge' };
+        }
+        if (desc.includes('london eye')) {
+            return { url: createGoogleMapsLink('London Eye, London, UK'), displayText: 'London Eye' };
+        }
+        if (desc.includes('hyde park')) {
+            return { url: createGoogleMapsLink('Hyde Park, London, UK'), displayText: 'Hyde Park' };
+        }
+        if (desc.includes('oxford street')) {
+            return { url: createGoogleMapsLink('Oxford Street, London, UK'), displayText: 'Oxford Street' };
+        }
+        if (desc.includes('regent street')) {
+            return { url: createGoogleMapsLink('Regent Street, London, UK'), displayText: 'Regent Street' };
+        }
+        if (desc.includes('camden')) {
+            return { url: createGoogleMapsLink('Camden Market, London, UK'), displayText: 'Camden Market' };
+        }
+        if (desc.includes('piccadilly circus')) {
+            return { url: createGoogleMapsLink('Piccadilly Circus, London, UK'), displayText: 'Piccadilly Circus' };
+        }
+        if (desc.includes('soho')) {
+            return { url: createGoogleMapsLink('Soho, London, UK'), displayText: 'Soho' };
+        }
+        if (desc.includes('west end')) {
+            return { url: createGoogleMapsLink('West End, London, UK'), displayText: 'West End' };
+        }
+        if (desc.includes('covent garden')) {
+            return { url: createGoogleMapsLink('Covent Garden, London, UK'), displayText: 'Covent Garden' };
+        }
+        if (desc.includes('támesis')) {
+            return { url: createGoogleMapsLink('River Thames, London, UK'), displayText: 'River Thames' };
+        }
     }
-    // Addresses or neighborhoods
-    if (desc.includes('calle de las infantas')) {
-        return { url: createGoogleMapsLink('Calle de las Infantas, Madrid'), displayText: 'Calle de las Infantas' };
+    
+    // === AMSTERDAM ACTIVITIES ===
+    if (cityLower.includes('amsterdam')) {
+        if (desc.includes('ceremonia de graduación') || desc.includes('graduación')) {
+            return { url: createGoogleMapsLink('De La Mar Theater, Marnixstraat 402, Amsterdam, Netherlands'), displayText: 'De La Mar Theater' };
+        }
+        if (desc.includes('rijksmuseum')) {
+            return { url: 'https://www.rijksmuseum.nl', displayText: 'Rijksmuseum' };
+        }
+        if (desc.includes('van gogh')) {
+            return { url: 'https://www.vangoghmuseum.nl', displayText: 'Van Gogh Museum' };
+        }
+        if (desc.includes('museumplein')) {
+            return { url: createGoogleMapsLink('Museumplein, Amsterdam, Netherlands'), displayText: 'Museumplein' };
+        }
+        if (desc.includes('ana frank')) {
+            return { url: 'https://www.annefrank.org', displayText: 'Anne Frank House' };
+        }
+        if (desc.includes('vondelpark')) {
+            return { url: createGoogleMapsLink('Vondelpark, Amsterdam, Netherlands'), displayText: 'Vondelpark' };
+        }
+        if (desc.includes('barrio rojo')) {
+            return { url: createGoogleMapsLink('Red Light District, Amsterdam, Netherlands'), displayText: 'Red Light District' };
+        }
+        if (desc.includes('canales') || desc.includes('canal')) {
+            return { url: createGoogleMapsLink('Amsterdam Canal Cruise departure points'), displayText: 'Amsterdam Canal Cruise' };
+        }
+        if (desc.includes('ceppi')) {
+            return { url: createGoogleMapsLink('Ceppi\'s Amsterdam, Lijnbaansgracht 256, Amsterdam'), displayText: 'Ceppi\'s Amsterdam' };
+        }
     }
-    if (desc.includes('cala d\'or')) {
-        return { url: createGoogleMapsLink('Cala d\'Or, Mallorca'), displayText: 'Cala d\'Or' };
-    }
-    if (desc.includes('piccadilly circus')) {
-        return { url: createGoogleMapsLink('Piccadilly Circus, London'), displayText: 'Piccadilly Circus' };
-    }
-    if (desc.includes('puerta del sol')) {
-        return { url: createGoogleMapsLink('Puerta del Sol, Madrid'), displayText: 'Puerta del Sol' };
-    }
-    if (desc.includes('gran vía')) {
-        return { url: createGoogleMapsLink('Gran Vía, Madrid'), displayText: 'Gran Vía' };
-    }
-    if (desc.includes('canales cercanos') || desc.includes('canal cruise')) {
-        return { url: createGoogleMapsLink('Amsterdam Canals'), displayText: 'Amsterdam Canals' };
-    }
-    // Fallback: Non-linkable or generic search
-    if (desc.includes('vuelo') || desc.includes('check-in') || desc.includes('llegada') || desc.includes('tiempo en')) {
+    
+    // === TRANSPORTATION & NON-LINKABLE ===
+    if (desc.includes('vuelo') || desc.includes('check-in') || desc.includes('checkout') || 
+        desc.includes('llegada') || desc.includes('tiempo en') || desc.includes('traslado') ||
+        desc.includes('flight') || desc.includes('departure') || desc.includes('arrival')) {
         return { url: '', displayText: description };
     }
-    // Generic search for unknown activities
+    
+    // === FALLBACK ===
+    // If no specific match, create a targeted Google search
     return { url: `https://www.google.com/search?q=${encodeURIComponent(description + ' ' + city)}`, displayText: description };
 }
 
@@ -352,10 +560,12 @@ function createItineraryCard(stop, tripData) {
             <div class="activity-item" role="listitem" tabindex="0">
                 <span class="activity-period">${label.charAt(0).toUpperCase() + label.slice(1)}</span>
                 ${url ? `
-                    <a href="${url}" target="_blank" rel="noopener" class="activity-link" aria-label="${activity.description}">
-                        ${displayText}
-                    </a>
-                    ${displayText !== activity.description ? `<span class="activity-context">${activity.description.replace(displayText, '')}</span>` : ''}
+                    <div class="activity-content">
+                        <a href="${url}" target="_blank" rel="noopener" class="activity-link" aria-label="${activity.description}">
+                            ${displayText}
+                        </a>
+                        ${displayText !== activity.description ? `<div class="activity-context">${activity.description}</div>` : ''}
+                    </div>
                 ` : `
                     <span class="activity-label">${activity.description}</span>
                 `}
@@ -437,45 +647,149 @@ function createItineraryCard(stop, tripData) {
 
 function renderFlights(tripData) {
     const flightsList = document.getElementById('flightsList');
-    flightsList.innerHTML = '';
     
-    if (tripData.flights.length === 0) {
-        flightsList.innerHTML = '<div class="empty-state"><h3>No flights added yet</h3></div>';
-        return;
-    }
-    
-    const mainFlights = tripData.flights.filter(flight => flight.group === 'main');
-    mainFlights.forEach(flight => {
-        const flightDiv = createFlightCard(flight, true);
-        const city = getCityFromFlight(flight);
-        flightDiv.addEventListener('click', () => {
-            showAccommodationForCity(city, tripData);
-        });
-        flightsList.appendChild(flightDiv);
-    });
-    
-    const partialFlights = tripData.flights.filter(flight => flight.group === 'partial');
-    if (partialFlights.length > 0) {
-        const partialGroupDiv = document.createElement('div');
-        partialGroupDiv.className = 'partial-group';
-        partialGroupDiv.innerHTML = '<div class="partial-group-label">Partial Group Itinerary</div>';
+    try {
+        if (!flightsList) {
+            throw new Error('Elemento flightsList no encontrado');
+        }
         
-        partialFlights.forEach(flight => {
-            const flightDiv = createFlightCard(flight, false);
-            partialGroupDiv.appendChild(flightDiv);
-        });
+        // Show loading state
+        flightsList.innerHTML = '<div class="loading-state">🛫 Cargando vuelos...</div>';
         
-        flightsList.appendChild(partialGroupDiv);
+        // Simulate brief loading for UX
+        setTimeout(() => {
+            try {
+                flightsList.innerHTML = '';
+                
+                if (!tripData || !tripData.flights || tripData.flights.length === 0) {
+                    flightsList.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-icon">✈️</div>
+                            <h3>No hay vuelos disponibles</h3>
+                            <p>Los datos de vuelos se cargarán automáticamente.</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                const mainFlights = tripData.flights.filter(flight => flight && flight.group === 'main');
+                console.log(`Renderizando ${mainFlights.length} vuelos principales`);
+                
+                mainFlights.forEach((flight, index) => {
+                    try {
+                        const flightDiv = createFlightCard(flight, true);
+                        const city = getCityFromFlight(flight);
+                        
+                        // Add secure click handler with error handling
+                        flightDiv.addEventListener('click', (e) => {
+                            try {
+                                e.preventDefault();
+                                console.log(`Vuelo clickeado: ${flight.from} → ${flight.to}, ciudad: ${city}`);
+                                showAccommodationForCity(city, tripData);
+                            } catch (clickError) {
+                                console.error('Error al hacer click en vuelo:', clickError);
+                                showToast('Error al navegar al alojamiento', 'error');
+                            }
+                        });
+                        
+                        flightsList.appendChild(flightDiv);
+                        console.log(`✅ Vuelo ${index + 1} renderizado: ${flight.from} → ${flight.to}`);
+                        
+                    } catch (flightError) {
+                        console.error('Error renderizando vuelo individual:', flightError, flight);
+                        // Continue with other flights
+                    }
+                });
+                
+                // Render partial flights if any
+                const partialFlights = tripData.flights.filter(flight => flight && flight.group === 'partial');
+                if (partialFlights.length > 0) {
+                    try {
+                        const partialGroupDiv = document.createElement('div');
+                        partialGroupDiv.className = 'partial-group';
+                        partialGroupDiv.innerHTML = '<div class="partial-group-label">Itinerario del Grupo Parcial</div>';
+                        
+                        partialFlights.forEach(flight => {
+                            try {
+                                const flightDiv = createFlightCard(flight, false);
+                                partialGroupDiv.appendChild(flightDiv);
+                            } catch (partialError) {
+                                console.error('Error renderizando vuelo parcial:', partialError);
+                            }
+                        });
+                        
+                        flightsList.appendChild(partialGroupDiv);
+                        console.log(`✅ ${partialFlights.length} vuelos parciales renderizados`);
+                        
+                    } catch (partialGroupError) {
+                        console.error('Error renderizando grupo parcial:', partialGroupError);
+                    }
+                }
+                
+                // Success feedback
+                if (mainFlights.length > 0) {
+                    console.log(`🎉 Renderizado completo: ${mainFlights.length} vuelos principales, ${partialFlights.length} vuelos parciales`);
+                }
+                
+            } catch (renderError) {
+                console.error('Error crítico en renderizado:', renderError);
+                flightsList.innerHTML = `
+                    <div class="error-state">
+                        <div class="error-icon">⚠️</div>
+                        <h3>Error al mostrar vuelos</h3>
+                        <p>Hubo un problema renderizando los vuelos.</p>
+                        <button onclick="location.reload()" class="retry-btn">🔄 Reintentar</button>
+                    </div>
+                `;
+                showToast('Error renderizando vuelos', 'error');
+            }
+        }, 300); // Brief loading delay for UX
+        
+    } catch (criticalError) {
+        console.error('Error crítico en renderFlights:', criticalError);
+        if (flightsList) {
+            flightsList.innerHTML = `
+                <div class="error-state">
+                    <div class="error-icon">🚨</div>
+                    <h3>Error crítico</h3>
+                    <p>No se pudo inicializar la vista de vuelos.</p>
+                    <button onclick="location.reload()" class="retry-btn">🔄 Reintentar</button>
+                </div>
+            `;
+        }
+        showToast('Error crítico en la aplicación', 'error');
     }
 }
 
-function showSection(sectionId) {
-    document.querySelectorAll('.section').forEach(section => section.classList.remove('active'));
-    document.getElementById(sectionId).classList.add('active');
+function showSection(sectionId, direction = 'right') {
+    const currentSection = document.querySelector('.section.active');
+    const targetSection = document.getElementById(sectionId);
+    
+    // Add loading state
+    targetSection.classList.add('loading');
+    
+    // Smooth transition
+    if (currentSection) {
+        currentSection.classList.add(direction === 'right' ? 'slide-in-left' : 'slide-in-right');
+        setTimeout(() => {
+            currentSection.classList.remove('active', 'slide-in-left', 'slide-in-right');
+        }, 200);
+    }
+    
+    setTimeout(() => {
+        targetSection.classList.add('active', direction === 'right' ? 'slide-in-right' : 'slide-in-left');
+        setTimeout(() => {
+            targetSection.classList.remove('slide-in-right', 'slide-in-left', 'loading');
+        }, 400);
+    }, 100);
+    
     updateHash({ section: sectionId });
+    updateProgressBar(sectionId);
+    updateBreadcrumb(sectionId);
+    showToast(`Navegando a ${getSectionDisplayName(sectionId)}`, 'success');
 }
 
-function addBackButton(sectionId, onClick, label = 'Back to Flights') {
+function addBackButton(sectionId, onClick, label = 'Volver a Vuelos') {
     const sectionEl = document.getElementById(sectionId);
     let backBtn = sectionEl.querySelector('.back-btn');
     if (backBtn) backBtn.remove();
@@ -498,10 +812,11 @@ function showAccommodationForCity(city, tripData) {
         });
         hotelsList.appendChild(hotelDiv);
     } else {
-        hotelsList.innerHTML = '<div class="empty-state"><h3>No accommodation found for this city</h3></div>';
+        hotelsList.innerHTML = '<div class="empty-state"><h3>No se encontró alojamiento para esta ciudad</h3></div>';
     }
-    addBackButton('accommodation', () => showSection('flights'), 'Back to Flights');
+    addBackButton('accommodation', () => showSection('flights', 'left'), 'Volver a Vuelos');
     updateHash({ section: 'accommodation', city: slugifyCity(city) });
+    addHeaderContext('accommodation', city);
 }
 
 function showItineraryForCity(city, tripData) {
@@ -515,15 +830,16 @@ function showItineraryForCity(city, tripData) {
         setTimeout(() => card.classList.remove('highlight'), 1600);
         itineraryList.appendChild(card);
     } else {
-        itineraryList.innerHTML = '<div class="empty-state"><h3>No itinerary found for this city</h3></div>';
+        itineraryList.innerHTML = '<div class="empty-state"><h3>No se encontró itinerario para esta ciudad</h3></div>';
     }
-    addBackButton('itinerary', () => showAccommodationForCity(city, tripData), 'Back to Accommodation');
+    addBackButton('itinerary', () => showAccommodationForCity(city, tripData), 'Volver al Alojamiento');
     updateHash({ section: 'itinerary', city: slugifyCity(city) });
+    addHeaderContext('itinerary', city);
 }
 
 function populateQuickJump(tripData) {
     const select = document.getElementById('quick-jump');
-    select.innerHTML = '<option value="">Jump to Itinerary</option>';
+    select.innerHTML = '<option value="">Ir al Itinerario</option>';
     tripData.itinerary.forEach(stop => {
         const option = document.createElement('option');
         option.value = stop.city;
@@ -537,6 +853,202 @@ function populateQuickJump(tripData) {
             e.target.value = '';
         }
     });
+}
+
+// Enhanced UX Functions
+function updateProgressBar(sectionId) {
+    const sections = ['flights', 'accommodation', 'itinerary'];
+    const currentIndex = sections.indexOf(sectionId);
+    const progress = currentIndex >= 0 ? ((currentIndex + 1) / sections.length) * 100 : 0;
+    
+    let progressBar = document.querySelector('.progress-bar');
+    if (!progressBar) {
+        progressBar = document.createElement('div');
+        progressBar.className = 'progress-bar';
+        progressBar.innerHTML = '<div class="progress-fill"></div>';
+        document.body.prepend(progressBar);
+    }
+    
+    const progressFill = progressBar.querySelector('.progress-fill');
+    progressFill.style.width = progress + '%';
+}
+
+function updateBreadcrumb(sectionId, city = '') {
+    let breadcrumb = document.querySelector('.breadcrumb');
+    if (!breadcrumb) {
+        breadcrumb = document.createElement('nav');
+        breadcrumb.className = 'breadcrumb';
+        document.querySelector('.container').insertBefore(breadcrumb, document.querySelector('main'));
+    }
+    
+    const breadcrumbItems = [
+        { id: 'flights', label: '✈️ Vuelos', active: sectionId === 'flights' },
+        { id: 'accommodation', label: '🏨 Alojamiento', active: sectionId === 'accommodation' },
+        { id: 'itinerary', label: '📅 Itinerario', active: sectionId === 'itinerary' }
+    ];
+    
+    breadcrumb.innerHTML = breadcrumbItems.map((item, index) => {
+        const isLast = index === breadcrumbItems.length - 1;
+        const itemHtml = `<a href="#" class="breadcrumb-item ${item.active ? 'active' : ''}" data-section="${item.id}">${item.label}${city && item.active ? ` - ${city}` : ''}</a>`;
+        return itemHtml + (isLast ? '' : '<span class="breadcrumb-separator">›</span>');
+    }).join('');
+    
+    // Add click handlers
+    breadcrumb.querySelectorAll('.breadcrumb-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetSection = item.dataset.section;
+            if (targetSection !== sectionId) {
+                showSection(targetSection, targetSection === 'flights' ? 'left' : 'right');
+            }
+        });
+    });
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => toast.classList.add('show'), 100);
+    setTimeout(() => {
+        toast.classList.remove('show');
+        setTimeout(() => document.body.removeChild(toast), 300);
+    }, 3000);
+}
+
+function getSectionDisplayName(sectionId) {
+    const names = {
+        flights: 'Vuelos',
+        accommodation: 'Alojamiento', 
+        itinerary: 'Itinerario'
+    };
+    return names[sectionId] || sectionId;
+}
+
+function createFloatingActionButton() {
+    const fabContainer = document.createElement('div');
+    fabContainer.className = 'fab-container';
+    
+    const fab = document.createElement('button');
+    fab.className = 'fab';
+    fab.innerHTML = '⚡';
+    fab.setAttribute('aria-label', 'Quick Actions');
+    
+    const quickActions = document.createElement('div');
+    quickActions.className = 'quick-actions';
+    quickActions.innerHTML = `
+        <a href="#" class="quick-action" data-section="flights">
+            <span>✈️</span> Vuelos
+        </a>
+        <a href="#" class="quick-action" data-section="accommodation">
+            <span>🏨</span> Alojamiento
+        </a>
+        <a href="#" class="quick-action" data-section="itinerary">
+            <span>📅</span> Itinerario
+        </a>
+    `;
+    
+    let isOpen = false;
+    fab.addEventListener('click', () => {
+        isOpen = !isOpen;
+        quickActions.classList.toggle('show', isOpen);
+        fab.style.transform = isOpen ? 'rotate(45deg)' : 'rotate(0deg)';
+    });
+    
+    // Add click handlers for quick actions
+    quickActions.querySelectorAll('.quick-action').forEach(action => {
+        action.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetSection = action.dataset.section;
+            showSection(targetSection);
+            isOpen = false;
+            quickActions.classList.remove('show');
+            fab.style.transform = 'rotate(0deg)';
+        });
+    });
+    
+    // Close on outside click
+    document.addEventListener('click', (e) => {
+        if (!fabContainer.contains(e.target) && isOpen) {
+            isOpen = false;
+            quickActions.classList.remove('show');
+            fab.style.transform = 'rotate(0deg)';
+        }
+    });
+    
+    fabContainer.appendChild(fab);
+    fabContainer.appendChild(quickActions);
+    document.body.appendChild(fabContainer);
+}
+
+function addKeyboardShortcuts() {
+    document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey || e.metaKey) {
+            switch(e.key) {
+                case '1':
+                    e.preventDefault();
+                    showSection('flights');
+                    break;
+                case '2':
+                    e.preventDefault();
+                    showSection('accommodation');
+                    break;
+                case '3':
+                    e.preventDefault();
+                    showSection('itinerary');
+                    break;
+            }
+        }
+        
+        // Arrow key navigation
+        if (!e.ctrlKey && !e.metaKey && !e.target.matches('input, select, textarea')) {
+            const currentSection = document.querySelector('.section.active').id;
+            const sections = ['flights', 'accommodation', 'itinerary'];
+            const currentIndex = sections.indexOf(currentSection);
+            
+            if (e.key === 'ArrowRight' && currentIndex < sections.length - 1) {
+                e.preventDefault();
+                showSection(sections[currentIndex + 1], 'right');
+            } else if (e.key === 'ArrowLeft' && currentIndex > 0) {
+                e.preventDefault();
+                showSection(sections[currentIndex - 1], 'left');
+            }
+        }
+    });
+}
+
+function addHeaderContext(sectionId, city = '') {
+    const section = document.getElementById(sectionId);
+    let headerContext = section.querySelector('.header-context');
+    
+    if (headerContext) {
+        headerContext.remove();
+    }
+    
+    headerContext = document.createElement('div');
+    headerContext.className = 'header-context';
+    
+    const contextData = {
+        flights: { icon: '✈️', title: 'Tus Vuelos', desc: 'Selecciona un vuelo para ver el alojamiento' },
+        accommodation: { icon: '🏨', title: `Alojamiento${city ? ` en ${city}` : ''}`, desc: 'Haz clic para ver el itinerario detallado' },
+        itinerary: { icon: '📅', title: `Itinerario${city ? ` para ${city}` : ''}`, desc: 'Tus actividades detalladas día por día' }
+    };
+    
+    const context = contextData[sectionId];
+    if (context) {
+        headerContext.innerHTML = `
+            <div class="context-icon">${context.icon}</div>
+            <div class="context-info">
+                <h3>${context.title}</h3>
+                <p>${context.desc}</p>
+            </div>
+        `;
+        
+        const firstChild = section.firstElementChild;
+        section.insertBefore(headerContext, firstChild);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -560,6 +1072,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     const tripData = await loadTripData();
     renderFlights(tripData);
     populateQuickJump(tripData);
+    
+    // Initialize enhanced UX features
+    createFloatingActionButton();
+    addKeyboardShortcuts();
+    updateProgressBar('flights');
+    updateBreadcrumb('flights');
+    addHeaderContext('flights');
 
     const params = new URLSearchParams(location.hash.slice(1));
     const hashSection = params.get('section');
