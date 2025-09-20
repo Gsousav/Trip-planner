@@ -283,33 +283,45 @@ body {
 
 .pass-actions {
     display: flex;
-    gap: 16px;
-    margin-top: 12px;
+    gap: 12px;
+    margin-top: 16px;
     justify-content: flex-start;
+    flex-wrap: wrap;
 }
 
 .icon-btn {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 80px; /* Increased width for better touch target */
-    height: 60px; /* Increased height for better touch target */
-    border-radius: 16px; /* Slightly larger radius for modern look */
-    background: #007aff; /* Vibrant blue for primary action */
-    box-shadow: 0 2px 6px rgba(0,0,0,0.1), inset 0 0 0 1px rgba(0,0,0,0.05);
-    transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+    min-width: 120px; /* Bootstrap mobile button standard */
+    height: 48px; /* Bootstrap standard button height */
+    padding: 12px 20px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #007aff 0%, #005bb5 100%);
+    color: white;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.25), 0 2px 4px rgba(0,0,0,0.1);
+    border: none;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
 .icon-btn:hover {
-    background: #005bb5; /* Darker blue on hover */
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    background: linear-gradient(135deg, #005bb5 0%, #004999 100%);
+    box-shadow: 0 6px 20px rgba(0, 122, 255, 0.35), 0 4px 8px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
 }
 
 .icon-btn:active {
-    transform: scale(0.95);
-    background: #004999; /* Even darker blue on active */
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transform: translateY(0) scale(0.98);
+    background: linear-gradient(135deg, #004999 0%, #003366 100%);
+    box-shadow: 0 2px 8px rgba(0, 122, 255, 0.2), 0 1px 2px rgba(0,0,0,0.1);
+    transition: all 0.1s ease;
 }
 
 .icon-btn:focus-visible {
@@ -318,9 +330,11 @@ body {
 }
 
 .icon-img {
-    width: 36px; /* Larger icon for better visibility */
-    height: 36px;
+    width: 20px;
+    height: 20px;
     object-fit: contain;
+    margin-right: 8px;
+    filter: brightness(1.1);
 }
 
 /* Playing card style */
@@ -1097,14 +1111,22 @@ html[data-theme="light"] {
     }
 
     .icon-btn {
-        width: 72px; /* Slightly smaller on mobile for better fit */
-        height: 56px;
+        min-width: 140px; /* Larger on mobile for better touch targets */
+        height: 52px;
+        padding: 14px 24px;
         border-radius: 14px;
+        font-size: 15px;
     }
-
+    
+    .pass-actions {
+        gap: 8px;
+        margin-top: 20px;
+    }
+    
     .icon-img {
-        width: 32px; /* Slightly smaller icon on mobile */
-        height: 32px;
+        width: 22px;
+        height: 22px;
+        margin-right: 10px;
     }
 }
 

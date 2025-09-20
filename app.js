@@ -320,8 +320,8 @@ function createHotelCard(hotel) {
         </div>
         <div class="pass-footer address">${hotel.address}</div>
         <div class="pass-actions">
-            ${mapsLink ? `<a class="icon-btn apple-maps" href="${mapsLink}" target="_blank" rel="noopener" aria-label="Open in Apple Maps"><img src="appleMaps.png" alt="" class="icon-img"></a>` : ''}
-            ${gmapsLink ? `<a class="icon-btn google-maps" href="${gmapsLink}" target="_blank" rel="noopener" aria-label="Open in Google Maps"><img src="googleMaps.png" alt="" class="icon-img"></a>` : ''}
+            ${mapsLink ? `<a class="icon-btn apple-maps" href="${mapsLink}" target="_blank" rel="noopener" aria-label="Open in Apple Maps"><img src="appleMaps.png" alt="" class="icon-img"><span>Apple Maps</span></a>` : ''}
+            ${gmapsLink ? `<a class="icon-btn google-maps" href="${gmapsLink}" target="_blank" rel="noopener" aria-label="Open in Google Maps"><img src="googleMaps.png" alt="" class="icon-img"><span>Google Maps</span></a>` : ''}
         </div>
     `;
     hotelDiv.querySelectorAll('a').forEach(a => a.addEventListener('click', e => e.stopPropagation()));
