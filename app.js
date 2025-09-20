@@ -610,36 +610,187 @@ function createItineraryCard(stop, tripData) {
     const prevBtn = card.querySelector('.nav-btn.prev');
     const nextBtn = card.querySelector('.nav-btn.next');
     const total = Math.max(days.length, 1);
-    function update(index) {
+    
+    // TikTok-like smooth scrolling with momentum
+    let currentIndex = 0;
+    let isAnimating = false;
+    let touchStartY = 0;
+    let touchStartTime = 0;
+    let velocity = 0;
+    let lastTouchY = 0;
+    let lastTouchTime = 0;
+    let momentumAnimation = null;
+    
+    // Enhanced easing function for smooth transitions
+    function easeOutCubic(t) {
+        return 1 - Math.pow(1 - t, 3);
+    }
+    
+    // TikTok-like smooth update function
+    function update(index, animated = true) {
+        if (isAnimating) return;
+        
         const clamped = Math.max(0, Math.min(index, total - 1));
+        currentIndex = clamped;
+        
         slidesEl.setAttribute('data-index', String(clamped));
-        trackEl.style.transform = `translateX(-${clamped * 100}%)`;
         dotsEl.forEach((d, i) => d.classList.toggle('active', i === clamped));
         prevBtn.disabled = clamped === 0;
         nextBtn.disabled = clamped === total - 1;
+        
+        if (animated) {
+            isAnimating = true;
+            trackEl.style.transition = 'transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)';
+            trackEl.style.transform = `translateY(-${clamped * 100}%)`;
+            
+            setTimeout(() => {
+                trackEl.style.transition = '';
+                isAnimating = false;
+            }, 400);
+        } else {
+            trackEl.style.transform = `translateY(-${clamped * 100}%)`;
+        }
     }
-    prevBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) - 1));
-    nextBtn.addEventListener('click', () => update(Number(slidesEl.getAttribute('data-index')) + 1));
-    dotsEl.forEach(dot => dot.addEventListener('click', () => update(Number(dot.getAttribute('data-dot')))));
-
-    let startX = 0; let deltaX = 0; let dragging = false;
+    
+    // Momentum-based scrolling
+    function applyMomentum(direction) {
+        if (momentumAnimation) {
+            cancelAnimationFrame(momentumAnimation);
+        }
+        
+        let startTime = null;
+        const duration = Math.min(300 + Math.abs(velocity) * 10, 600);
+        const startIndex = currentIndex;
+        const targetIndex = currentIndex + direction;
+        
+        function momentumStep(timestamp) {
+            if (!startTime) startTime = timestamp;
+            const elapsed = timestamp - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            
+            const easedProgress = easeOutCubic(progress);
+            const currentProgress = startIndex + (targetIndex - startIndex) * easedProgress;
+            
+            trackEl.style.transform = `translateY(-${currentProgress * 100}%)`;
+            
+            if (progress < 1) {
+                momentumAnimation = requestAnimationFrame(momentumStep);
+            } else {
+                update(Math.round(currentProgress), false);
+                momentumAnimation = null;
+            }
+        }
+        
+        momentumAnimation = requestAnimationFrame(momentumStep);
+    }
+    
+    // Enhanced touch handling with velocity calculation
     slidesEl.addEventListener('touchstart', (e) => {
         if (!e.touches || !e.touches[0]) return;
-        dragging = true; startX = e.touches[0].clientX; deltaX = 0;
+        touchStartY = e.touches[0].clientY;
+        touchStartTime = Date.now();
+        lastTouchY = touchStartY;
+        lastTouchTime = touchStartTime;
+        velocity = 0;
+        
+        // Stop any ongoing momentum
+        if (momentumAnimation) {
+            cancelAnimationFrame(momentumAnimation);
+            momentumAnimation = null;
+        }
+        
+        trackEl.style.transition = '';
     }, { passive: true });
+    
     slidesEl.addEventListener('touchmove', (e) => {
-        if (!dragging || !e.touches || !e.touches[0]) return;
-        deltaX = e.touches[0].clientX - startX;
+        if (!e.touches || !e.touches[0]) return;
+        
+        const currentY = e.touches[0].clientY;
+        const currentTime = Date.now();
+        const deltaY = currentY - lastTouchY;
+        const deltaTime = currentTime - lastTouchTime;
+        
+        if (deltaTime > 0) {
+            velocity = deltaY / deltaTime;
+        }
+        
+        lastTouchY = currentY;
+        lastTouchTime = currentTime;
+        
+        // Apply resistance at boundaries
+        const deltaFromStart = currentY - touchStartY;
+        const resistance = 0.3;
+        let adjustedDelta = deltaFromStart;
+        
+        if (currentIndex === 0 && deltaFromStart > 0) {
+            adjustedDelta = deltaFromStart * resistance;
+        } else if (currentIndex === total - 1 && deltaFromStart < 0) {
+            adjustedDelta = deltaFromStart * resistance;
+        }
+        
+        trackEl.style.transform = `translateY(-${currentIndex * 100}% + ${adjustedDelta}px)`;
     }, { passive: true });
+    
     slidesEl.addEventListener('touchend', () => {
-        if (!dragging) return; dragging = false;
-        const width = slidesEl.clientWidth || 1;
-        const threshold = width * 0.15;
-        const current = Number(slidesEl.getAttribute('data-index'));
-        if (deltaX < -threshold) update(current + 1);
-        else if (deltaX > threshold) update(current - 1);
-        deltaX = 0;
+        const deltaY = lastTouchY - touchStartY;
+        const deltaTime = Date.now() - touchStartTime;
+        const threshold = 50; // Minimum distance for swipe
+        const velocityThreshold = 0.3; // Minimum velocity for momentum
+        
+        // Determine if we should change slides based on distance or velocity
+        if (Math.abs(deltaY) > threshold || Math.abs(velocity) > velocityThreshold) {
+            const direction = deltaY > 0 ? -1 : 1;
+            const newIndex = currentIndex + direction;
+            
+            // Apply momentum if velocity is high enough
+            if (Math.abs(velocity) > velocityThreshold) {
+                applyMomentum(direction);
+            } else {
+                update(newIndex);
+            }
+        } else {
+            // Snap back to current position
+            update(currentIndex);
+        }
+    }, { passive: true });
+    
+    // Button event listeners with smooth animations
+    prevBtn.addEventListener('click', () => {
+        if (!isAnimating) {
+            update(currentIndex - 1);
+        }
     });
+    
+    nextBtn.addEventListener('click', () => {
+        if (!isAnimating) {
+            update(currentIndex + 1);
+        }
+    });
+    
+    // Dot navigation with smooth transitions
+    dotsEl.forEach((dot, index) => {
+        dot.addEventListener('click', () => {
+            if (!isAnimating && index !== currentIndex) {
+                update(index);
+            }
+        });
+    });
+    
+    // Keyboard navigation for accessibility
+    slidesEl.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowUp' && !isAnimating) {
+            e.preventDefault();
+            update(currentIndex - 1);
+        } else if (e.key === 'ArrowDown' && !isAnimating) {
+            e.preventDefault();
+            update(currentIndex + 1);
+        }
+    });
+    
+    // Make slides focusable for keyboard navigation
+    slidesEl.setAttribute('tabindex', '0');
+    slidesEl.setAttribute('role', 'region');
+    slidesEl.setAttribute('aria-label', `Itinerario para ${stop.city}`);
 
     return card;
 }
