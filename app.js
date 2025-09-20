@@ -791,7 +791,6 @@ function showSection(sectionId, direction = 'right', tripData = null) {
     updateNavigationButtons(sectionId);
     
     updateHash({ section: sectionId });
-    updateProgressBar(sectionId);
     updateBreadcrumb(sectionId);
     
     // Show all destinations when clicking navigation buttons
@@ -927,79 +926,6 @@ function populateQuickJump(tripData) {
 }
 
 // Enhanced UX Functions
-function updateProgressBar(sectionId) {
-    const sections = ['flights', 'accommodation', 'itinerary'];
-    const sectionLabels = {
-        'flights': 'Vuelos',
-        'accommodation': 'Alojamiento', 
-        'itinerary': 'Itinerario'
-    };
-    const currentIndex = sections.indexOf(sectionId);
-    const progress = currentIndex >= 0 ? ((currentIndex + 1) / sections.length) * 100 : 0;
-    
-    let progressBar = document.querySelector('.progress-bar');
-    if (!progressBar) {
-        progressBar = document.createElement('div');
-        progressBar.className = 'progress-bar';
-        progressBar.innerHTML = `
-            <div class="progress-fill"></div>
-            <div class="progress-steps">
-                <div class="progress-step" data-step="flights">
-                    <div class="step-dot"></div>
-                </div>
-                <div class="progress-step" data-step="accommodation">
-                    <div class="step-dot"></div>
-                </div>
-                <div class="progress-step" data-step="itinerary">
-                    <div class="step-dot"></div>
-                </div>
-            </div>
-            <div class="progress-label">${sectionLabels[sectionId] || 'Cargando...'}</div>
-        `;
-        document.body.prepend(progressBar);
-    }
-    
-    const progressFill = progressBar.querySelector('.progress-fill');
-    const progressLabel = progressBar.querySelector('.progress-label');
-    const progressSteps = progressBar.querySelectorAll('.progress-step');
-    
-    // Update progress fill with smooth animation
-    progressFill.style.width = progress + '%';
-    
-    // Update current section label
-    if (progressLabel) {
-        progressLabel.textContent = sectionLabels[sectionId] || 'Cargando...';
-        progressLabel.classList.add('updating');
-        setTimeout(() => progressLabel.classList.remove('updating'), 300);
-    }
-    
-    // Update step indicators and add click handlers
-    progressSteps.forEach((step, index) => {
-        const stepSection = step.getAttribute('data-step');
-        if (sections.indexOf(stepSection) <= currentIndex) {
-            step.classList.add('completed');
-        } else {
-            step.classList.remove('completed');
-        }
-        
-        if (stepSection === sectionId) {
-            step.classList.add('current');
-        } else {
-            step.classList.remove('current');
-        }
-        
-        // Add click handler for navigation
-        step.addEventListener('click', (e) => {
-            e.preventDefault();
-            if (stepSection !== sectionId) {
-                showSection(stepSection, stepSection === 'flights' ? 'left' : 'right');
-            }
-        });
-        
-        // Make it clear it's clickable
-        step.style.cursor = 'pointer';
-    });
-}
 
 function updateBreadcrumb(sectionId, city = '') {
     let breadcrumb = document.querySelector('.breadcrumb');
@@ -1234,7 +1160,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Initialize enhanced UX features first
     createFloatingActionButton();
     addKeyboardShortcuts();
-    updateProgressBar('flights');
     updateBreadcrumb('flights');
     addHeaderContext('flights');
 
