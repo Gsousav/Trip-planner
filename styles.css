@@ -726,7 +726,7 @@ body {
 .depart, .arrive {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     flex: 1;
     padding: 0 16px;
 }
@@ -979,6 +979,35 @@ body {
     display: flex;
     justify-content: space-between;
     margin-top: 12px;
+}
+
+.nav-btn.icon-btn {
+    padding: 12px 20px;
+    background: #f5f5f7;
+    border-radius: 12px;
+    border: none;
+    font-size: 15px;
+}
+
+.nav-btn.icon-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+}
+
+
+.nav-btn.icon-btn:hover:not(:disabled) {
+    background: #e5e5ea;
+}
+
+.nav-btn.icon-btn:active:not(:disabled) {
+    transform: scale(0.95);
+    background: #d4d4d8;
+}
+
+/* Add gap between the previous and next buttons */
+.slide-nav .nav-btn {
+    margin-right: 12px;
+    margin-left: 12px;
 }
 
 .nav-btn {
@@ -1595,8 +1624,12 @@ body {
     color: #666;
 }
 
+/* Make sure the label within the pass-row is centered below the city */
 .pass-row {
     display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
     gap: 0.5rem;
     margin: 0.5rem 0;
 }
@@ -2406,15 +2439,6 @@ html {
     color: #666;
     font-size: 0.95rem;
     line-height: 1.5;
-}
-
-/* Spanish Navigation Labels */
-.nav-btn.prev::before {
-    content: '← ';
-}
-
-.nav-btn.next::after {
-    content: ' →';
 }
 
 .slide-nav .nav-btn {

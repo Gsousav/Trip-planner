@@ -676,8 +676,8 @@ function createItineraryCard(stop, tripData) {
         </div>
         <div class="slide-dots">${dotsHtml}</div>
         <div class="slide-nav">
-            <button class="nav-btn prev" type="button">Anterior</button>
-            <button class="nav-btn next" type="button">Siguiente</button>
+            <button class="nav-btn icon-btn prev" type="button">Anterior</button>
+            <button class="nav-btn icon-btn next" type="button">Siguiente</button>
         </div>
     `;
 
