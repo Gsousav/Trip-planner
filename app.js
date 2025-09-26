@@ -105,7 +105,7 @@ function formatDateTime(dateTimeStr) {
     if (!dateTimeStr) return 'No definido';
     const date = new Date(dateTimeStr);
     return date.toLocaleString('es-PE', {
-        weekday: 'short',
+        weekday: false,
         day: '2-digit',
         month: 'short',
         year: 'numeric',
