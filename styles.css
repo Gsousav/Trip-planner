@@ -354,6 +354,16 @@ body {
     .city-header h3 {
         font-size: 18px;
     }
+
+    .city[data-length="long"] {
+        font-size: 14px;
+    }
+
+    /* Ensure arrow doesnt interfere with text alingment */
+    .pass-primary {
+        position: relative;
+        gap: 16px;
+    }
 }
 
 /* Bootstrap Form Control */
