@@ -124,9 +124,9 @@ function formatDateTimeShort(dateTimeStr) {
     
     if (isMobile) {
         // More compact format for mobile
-        const day = date.toLocaleString('es-PE', { day: 'numeric' });
-        const month = date.toLocaleString('es-PE', { month: 'short' }).replace('.', '');
-        const time = date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
+        const day = date.toLocaleString('en-US', { day: 'numeric' });
+        const month = date.toLocaleString('en-US', { month: 'short' }).replace('.', '');
+        const time = date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
         return `${day} ${month} ${time}`; // Remove the colon to save space
     } else {
         // Original format for desktop
@@ -604,7 +604,6 @@ function createHotelCard(hotel) {
                 <span class="label">Check-in</span>
                 <span class="time">${hotel.checkin.includes('T') ? formatDateTime(hotel.checkin) : formatDate(hotel.checkin)}</span>
             </div>
-            <span class="arrow">→</span>
             <div class="arrive">
                 <span class="label">Check-out</span>
                 <span class="time">${hotel.checkout.includes('T') ? formatDateTime(hotel.checkout) : formatDate(hotel.checkout)}</span>
