@@ -371,21 +371,8 @@ function toggleTheme() {
 
     html.setAttribute('data-theme', nextTheme);
     try { localStorage.setItem('theme', nextTheme); } catch (_) {}
-    updateThemeIcon(nextTheme);
 }
 
-function updateThemeIcon(theme) {
-    if (window.innerWidth <= 768) return; // Skip icon update on mobile
-    const icon = document.querySelector('.theme-icon');
-    if (!icon) return;
-    if (theme === 'dark') {
-        icon.textContent = '☀️';
-        icon.setAttribute('aria-label', 'Switch to light mode');
-    } else {
-        icon.textContent = '🌙';
-        icon.setAttribute('aria-label', 'Switch to dark mode');
-    }
-}
 
 function getActivityLink(description, city) {
     const desc = description.toLowerCase();
@@ -1253,16 +1240,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
     const initialTheme = window.innerWidth <= 768 ? 'light' : (savedTheme && savedTheme !== 'system' ? savedTheme : 'system');
     html.setAttribute('data-theme', initialTheme);
-    updateThemeIcon(initialTheme === 'system' ? systemTheme : initialTheme);
-
-    if (window.innerWidth > 768) {
-        document.querySelector('.theme-toggle')?.addEventListener('click', toggleTheme);
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (html.getAttribute('data-theme') === 'system') {
-                updateThemeIcon(e.matches ? 'dark' : 'light');
-            }
-        });
-    }
 
     // Initialize enhanced UX features first
     createFloatingActionButton();

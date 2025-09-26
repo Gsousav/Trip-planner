@@ -64,9 +64,9 @@ html[data-theme="light"] {
     color-scheme: light;
 }
 
-html[data-theme="dark"] {
+/* html[data-theme="dark"] {
     color-scheme: dark;
-}
+} */
 
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
@@ -1209,7 +1209,7 @@ body {
     box-shadow: 0 1px 2px rgba(103, 192, 144, 0.25);
 }
 
-/* Dark Mode (only applied on larger screens) */
+/* Dark Mode (only applied on larger screens)
 @media (prefers-color-scheme: dark) {
     html:not([data-theme="light"]) {
         color-scheme: dark;
@@ -1398,7 +1398,7 @@ body {
         color: #67C090;
     }
     
-    /* Dark Mode Airline Button */
+     Dark Mode Airline Button 
     .airline-button {
         background: #124170;
         border-color: rgba(103, 192, 144, 0.3);
@@ -1424,7 +1424,7 @@ body {
     html:not([data-theme="light"]) .label {
         color: #DDF4E7;
     }
-}
+} */
 
 /* Force Light Mode (only applied on larger screens) */
 html[data-theme="light"] {
@@ -1962,7 +1962,7 @@ html[data-theme="light"] {
     --highlight: #f8f9fa;
 }
 
-[data-theme="dark"] {
+/* [data-theme="dark"] {
     --bg: #121212;
     --fg: #ffffff;
     --card-bg: #1e1e1e;
@@ -1971,7 +1971,7 @@ html[data-theme="light"] {
     --accent-hover: #3388ff;
     --shadow: 0 2px 8px rgba(0, 0, 0, 0.5);
     --highlight: #2c2c2c;
-}
+} */
 
 @media (max-width: 768px) {
     [data-theme] {
