@@ -118,13 +118,23 @@ function formatDateTime(dateTimeStr) {
 function formatDateTimeShort(dateTimeStr) {
     if (!dateTimeStr) return 'No definido';
     const date = new Date(dateTimeStr);
-    const months = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 
-                   'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
     
-    const day = date.toLocaleString('en-US', { day: '2-digit' });
-    const month = months[date.getMonth()];
-    const time = date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: true });
-    return `${day} ${month}: ${time}`;
+    // Check if we're on mobile
+    const isMobile = window.innerWidth <= 768;
+    
+    if (isMobile) {
+        // More compact format for mobile
+        const day = date.toLocaleString('es-PE', { day: 'numeric' });
+        const month = date.toLocaleString('es-PE', { month: 'short' }).replace('.', '');
+        const time = date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
+        return `${day} ${month} ${time}`; // Remove the colon to save space
+    } else {
+        // Original format for desktop
+        const day = date.toLocaleString('es-PE', { day: '2-digit' });
+        const month = date.toLocaleString('es-PE', { month: 'short' }).replace('.', '');
+        const time = date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
+        return `${day} ${month}: ${time}`;
+    }
 }
 
 function formatDate(dateStr) {
