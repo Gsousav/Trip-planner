@@ -2141,6 +2141,12 @@ header .theme-toggle {
     box-shadow: 0 6px 16px rgba(103, 192, 144, 0.4);
 }
 
+/* FAB open state - transform to square */
+.fab.open {
+    border-radius: 12px;
+    transform: rotate(45deg);
+}
+
 /* Quick Actions Menu */
 .quick-actions {
     position: fixed;
@@ -2305,11 +2311,16 @@ html {
         background: #67C090;
     }
     
-    /* .fab:hover {
+    .fab:hover {
         transform: scale(1.05);
         box-shadow: 0 8px 24px rgba(103, 192, 144, 0.5);
         background: #26667F;
-    }  */
+    }
+    
+    .fab.open {
+        border-radius: 12px;
+        transform: rotate(45deg) scale(1.05);
+    } 
     
      .quick-actions {
         bottom: 96px;

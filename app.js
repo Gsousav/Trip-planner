@@ -1121,7 +1121,7 @@ function createFloatingActionButton() {
     fab.addEventListener('click', () => {
         isOpen = !isOpen;
         quickActions.classList.toggle('show', isOpen);
-        fab.style.transform = isOpen ? 'rotate(45deg)' : 'rotate(0deg)';
+        fab.classList.toggle('open', isOpen);
     });
     
     // Add click handlers for quick actions
@@ -1138,7 +1138,7 @@ function createFloatingActionButton() {
             }
             isOpen = false;
             quickActions.classList.remove('show');
-            fab.style.transform = 'rotate(0deg)';
+            fab.classList.remove('open');
         });
     });
     
@@ -1147,7 +1147,7 @@ function createFloatingActionButton() {
         if (!fabContainer.contains(e.target) && isOpen) {
             isOpen = false;
             quickActions.classList.remove('show');
-            fab.style.transform = 'rotate(0deg)';
+            fab.classList.remove('open');
         }
     });
     
