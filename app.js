@@ -573,6 +573,7 @@ function createFlightCard(flight, isClickable = false) {
                     </span>
                     <span class="time">${formatDateTimeShort(flight.departure)}</span>
                 </div>
+                <span class="pass-arrow">➔</span>
                 <div class="arrive">
                     <span style="display: flex; align-items: center;">
                         ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
@@ -608,6 +609,7 @@ function createHotelCard(hotel) {
                 <span class="label">Check-in</span>
                 <span class="time">${hotel.checkin.includes('T') ? formatDateTime(hotel.checkin) : formatDate(hotel.checkin)}</span>
             </div>
+            <span class="pass-arrow">➔</span>
             <div class="arrive">
                 <span class="label">Check-out</span>
                 <span class="time">${hotel.checkout.includes('T') ? formatDateTime(hotel.checkout) : formatDate(hotel.checkout)}</span>
