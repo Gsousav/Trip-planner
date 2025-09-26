@@ -234,6 +234,7 @@ function createGoogleMapsLink(address) {
     return `https://www.google.com/maps/search/?api=1&query=${q}`;
 }
 
+
 function getAirlineLogoUrl(airlineName) {
     const key = (airlineName || '').toLowerCase();
     if (key.includes('iberia')) return 'iberia.png';
@@ -245,14 +246,87 @@ function getAirlineLogoUrl(airlineName) {
     return '';
 }
 
+
 function getCountryCodeFromLocation(locationStr) {
-    const name = (locationStr || '').toLowerCase();
-    if (name.includes('madrid')) return 'es';
-    if (name.includes('mallorca') || name.includes('palma')) return 'es';
-    if (name.includes('london')) return 'gb';
-    if (name.includes('amsterdam')) return 'nl';
-    if (name.includes('houston')) return 'us';
-    if (name.includes('lima')) return 'pe';
+    const location = (locationStr || '').toUpperCase().trim();
+    
+    // Direct airport code to country code mapping
+    const airportToCountry = {
+        'MAD': 'es',     // Madrid, Spain
+        'MALL': 'es',    // Mallorca, Spain (assuming this is Palma)
+        'PMI': 'es',     // Palma de Mallorca (official code)
+        'LON': 'gb',     // London, UK (generic)
+        'LHR': 'gb',     // London Heathrow
+        'LGW': 'gb',     // London Gatwick
+        'STN': 'gb',     // London Stansted
+        'LTN': 'gb',     // London Luton
+        'LCY': 'gb',     // London City
+        'AMS': 'nl',     // Amsterdam, Netherlands
+        'HOUSTON': 'us', // Houston, USA (generic)
+        'IAH': 'us',     // Houston Intercontinental
+        'HOU': 'us',     // Houston Hobby
+        'LIM': 'pe',     // Lima, Peru
+        'JFK': 'us',     // New York JFK
+        'LAX': 'us',     // Los Angeles
+        'CDG': 'fr',     // Paris Charles de Gaulle
+        'FCO': 'it',     // Rome Fiumicino
+        'FRA': 'de',     // Frankfurt
+        'BCN': 'es',     // Barcelona
+        'DUB': 'ie',     // Dublin
+        'ZUR': 'ch',     // Zurich
+        'VIE': 'at',     // Vienna
+        'ARN': 'se',     // Stockholm
+        'CPH': 'dk',     // Copenhagen
+        'OSL': 'no',     // Oslo
+        'HEL': 'fi',     // Helsinki
+        'WAW': 'pl',     // Warsaw
+        'PRG': 'cz',     // Prague
+        'BUD': 'hu',     // Budapest
+        'ATH': 'gr',     // Athens
+        'IST': 'tr',     // Istanbul
+        'SVO': 'ru',     // Moscow
+        'NRT': 'jp',     // Tokyo Narita
+        'ICN': 'kr',     // Seoul Incheon
+        'PEK': 'cn',     // Beijing
+        'HKG': 'hk',     // Hong Kong
+        'SIN': 'sg',     // Singapore
+        'BKK': 'th',     // Bangkok
+        'DXB': 'ae',     // Dubai
+        'DOH': 'qa',     // Doha
+        'CAI': 'eg',     // Cairo
+        'JNB': 'za',     // Johannesburg
+        'GRU': 'br',     // São Paulo
+        'EZE': 'ar',     // Buenos Aires
+        'SCL': 'cl',     // Santiago
+        'BOG': 'co',     // Bogotá
+        'MEX': 'mx',     // Mexico City
+        'YYZ': 'ca',     // Toronto
+        'YVR': 'ca',     // Vancouver
+        'SYD': 'au',     // Sydney
+        'MEL': 'au',     // Melbourne
+    };
+    
+    // Check for exact match first
+    if (airportToCountry[location]) {
+        return airportToCountry[location];
+    }
+    
+    // Fallback: check if the location string contains any known codes
+    for (const [code, country] of Object.entries(airportToCountry)) {
+        if (location.includes(code)) {
+            return country;
+        }
+    }
+    
+    // Additional fallback for city/country name patterns
+    const locationLower = location.toLowerCase();
+    if (locationLower.includes('madrid') || locationLower.includes('spain') || locationLower.includes('españa')) return 'es';
+    if (locationLower.includes('mallorca') || locationLower.includes('palma')) return 'es';
+    if (locationLower.includes('london') || locationLower.includes('england') || locationLower.includes('uk')) return 'gb';
+    if (locationLower.includes('amsterdam') || locationLower.includes('netherlands') || locationLower.includes('holland')) return 'nl';
+    if (locationLower.includes('houston') || locationLower.includes('texas') || locationLower.includes('usa') || locationLower.includes('united states')) return 'us';
+    if (locationLower.includes('lima') || locationLower.includes('peru')) return 'pe';
+    
     return '';
 }
 
