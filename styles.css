@@ -690,14 +690,40 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 8px;
+    gap: 16px;
+    position: relative;
 }
+
+.pass-primary::after {
+    content: '⟶';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 20px;
+    color: #26667F;
+}
+
+.pass-title .arrow {
+    margin: 0 12px;
+    color: #636e73;
+    font-size: 24px;
+}
+
 
 .depart, .arrive {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     flex: 1;
+    padding: 0 16px;
+}
+
+.depart {
+    padding-left: 0;
+}
+
+.arrive {
+    padding-right: 0;
 }
 
 .city {
