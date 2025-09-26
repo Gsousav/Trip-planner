@@ -561,7 +561,7 @@ function createFlightCard(flight, isClickable = false) {
     const fromFlag = getFlagUrl(fromCc);
     const toFlag = getFlagUrl(toCc);
     const detailsHtml = flight.details
-        ? flight.details.replace(/(,\s*[^,]+layover[^,]+)/, '<span class="layover-highlight">$1</span>')
+        ? flight.details.replace(/(\s*[^.]+Escala[^,]+)/, '<span class="layover-highlight">$1</span>')
         : '';
     flightDiv.innerHTML = `
         <div class="pass-header">

@@ -803,6 +803,7 @@ body {
     color: #26667F;
     word-break: break-word;
     hyphens: auto;
+    text-align: center;
 }
 
 .layover-highlight {
@@ -814,7 +815,12 @@ body {
 }
 
 .layover-highlight::before {
-    content: '⏱️';
+    content: '⚠️';
+    font-size: 12px;
+}
+
+.layover-highlight::after {
+    content: '⚠️';
     font-size: 12px;
 }
 

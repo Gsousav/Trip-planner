@@ -7,7 +7,7 @@
             "to": "Mallorca",
             "departure": "2025-11-04T19:30:00",
             "arrival": "2025-11-04T20:50:00",
-            "details": "Economy, Airbus A321neo, I21675",
+            "details": "IB 1675 : Airbus A321neo",
             "group": "main"
         },
         {
@@ -17,7 +17,7 @@
             "to": "Londres",
             "departure": "2025-11-08T14:25:00",
             "arrival": "2025-11-08T15:40:00",
-            "details": "Economy, Airbus A320, BA494",
+            "details": "BA 494 : Airbus A320",
             "group": "main"
         },
         {
@@ -27,7 +27,7 @@
             "to": "Amsterdam",
             "departure": "2025-11-13T15:45:00",
             "arrival": "2025-11-13T18:00:00",
-            "details": "Economy, Embraer 195 E2, KL1010",
+            "details": "KL 1010 : Embraer 195 E2",
             "group": "main"
         },
         {
@@ -37,7 +37,7 @@
             "to": "Madrid",
             "departure": "2025-11-01T18:10:00",
             "arrival": "2025-11-02T13:05:00",
-            "details": "Economy, Airbus A340-300, PU702",
+            "details": "PU 702 : Airbus A340-300",
             "group": "main"
         },
         {
@@ -47,7 +47,7 @@
             "to": "Houston",
             "departure": "2025-11-16T10:20:00",
             "arrival": "2025-11-16T14:40:00",
-            "details": "Economy, Boeing 767, UA 21, 1 hr 40 min layover in Houston",
+            "details": "UA 21, Boeing 767-300. Escala 1 hr 40 min en Houston",
             "group": "partial"
         },
         {
@@ -57,7 +57,7 @@
             "to": "Lima",
             "departure": "2025-11-16T16:20:00",
             "arrival": "2025-11-16T23:55:00",
-            "details": "Economy, Boeing 737-800, UA 854, 1 hr 40 min layover in Houston",
+            "details": "UA854 Vuelo de Escala (Corre!)",
             "group": "partial"
         }
     ],
@@ -84,7 +84,7 @@
             "id": 3,
             "hotelName": "London Stay",
             "type": "Airbnb",
-            "address": "Harold Estate, Page's Walk 63, Greater London, England SE1 4HW, United Kingdom",
+            "address": "Harold Estate, Page's Walk 63, Greater London",
             "checkin": "2025-11-08T15:00:00",
             "checkout": "2025-11-13T11:00:00",
             "url": "https://www.airbnb.co.uk/trips/v1/reservation-details/ro/RESERVATION2_CHECKIN/HMDRTF4PAQ"
