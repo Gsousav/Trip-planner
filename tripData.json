@@ -14,7 +14,7 @@
             "id": 2,
             "airline": "British Airways",
             "from": "Mallorca",
-            "to": "London (LHR)",
+            "to": "London",
             "departure": "2025-11-08T14:25:00",
             "arrival": "2025-11-08T15:40:00",
             "details": "Economy, Airbus A320, BA494",
@@ -23,7 +23,7 @@
         {
             "id": 3,
             "airline": "KLM",
-            "from": "London (LHR)",
+            "from": "London",
             "to": "Amsterdam",
             "departure": "2025-11-13T15:45:00",
             "arrival": "2025-11-13T18:00:00",

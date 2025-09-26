@@ -105,7 +105,7 @@ function formatDateTime(dateTimeStr) {
     if (!dateTimeStr) return 'No definido';
     const date = new Date(dateTimeStr);
     return date.toLocaleString('es-PE', {
-        weekday: false,
+        weekday: 'short',
         day: '2-digit',
         month: 'short',
         year: 'numeric',
@@ -118,11 +118,10 @@ function formatDateTime(dateTimeStr) {
 function formatDateTimeShort(dateTimeStr) {
     if (!dateTimeStr) return 'No definido';
     const date = new Date(dateTimeStr);
-    const weekday = date.toLocaleString('es-PE', { weekday: 'short' });
     const day = date.toLocaleString('es-PE', { day: '2-digit' });
     const month = date.toLocaleString('es-PE', { month: 'short' });
     const time = date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
-    return `${weekday}, ${day} ${month}, ${time}`;
+    return `${day} ${month}, ${time}`;
 }
 
 function formatDate(dateStr) {
