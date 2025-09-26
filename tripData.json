@@ -45,8 +45,8 @@
             "airline": "United Airlines",
             "from": "Amsterdam",
             "to": "Houston",
-            "departure": "2025-11-13T10:20:00",
-            "arrival": "2025-11-13T14:40:00",
+            "departure": "2025-11-16T10:20:00",
+            "arrival": "2025-11-16T14:40:00",
             "details": "Economy, Boeing 767, UA 21, 1 hr 40 min layover in Houston",
             "group": "partial"
         },
@@ -55,8 +55,8 @@
             "airline": "United Airlines",
             "from": "Houston",
             "to": "Lima",
-            "departure": "2025-11-13T16:20:00",
-            "arrival": "2025-11-13T23:55:00",
+            "departure": "2025-11-16T16:20:00",
+            "arrival": "2025-11-16T23:55:00",
             "details": "Economy, Boeing 737-800, UA 854, 1 hr 40 min layover in Houston",
             "group": "partial"
         }
