@@ -1031,10 +1031,11 @@ body {
     height: 20px;
     border-radius: 50%;
     object-fit: cover;
-    vertical-align: -4px;
+    vertical-align: middle; /* Changed from -4px to middle for better text alignment */
     background: #fff;
     box-shadow: 0 0 0 1px rgba(0,0,0,0.06);
     margin-right: 8px;
+    display: inline-block; /* Ensures the flag behaves as an inline element */
 }
 
 .pass-title .arrow {

@@ -567,13 +567,17 @@ function createFlightCard(flight, isClickable = false) {
         <div class="pass-header">
             <div class="pass-primary">
                 <div class="depart">
-                    ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
-                    <span class="city">${flight.from}</span>
+                    <span style="display: flex; align-items: center;">
+                        ${fromFlag ? `<img class="tiny-flag" src="${fromFlag}" alt="${fromCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                        <span class="city">${flight.from}</span>
+                    </span>
                     <span class="time">${formatDateTimeShort(flight.departure)}</span>
                 </div>
                 <div class="arrive">
-                    ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
-                    <span class="city">${flight.to}</span>
+                    <span style="display: flex; align-items: center;">
+                        ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
+                        <span class="city">${flight.to}</span>
+                    </span>
                     <span class="time">${formatDateTimeShort(flight.arrival)}</span>
                 </div>
             </div>
