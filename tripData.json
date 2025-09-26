@@ -1,6 +1,16 @@
 {
     "flights": [
         {
+            "id": 4,
+            "airline": "PlusUltra Airlines",
+            "from": "Lima",
+            "to": "Madrid",
+            "departure": "2025-11-01T18:10:00",
+            "arrival": "2025-11-02T13:05:00",
+            "details": "PU 702 : Airbus A340-300",
+            "group": "main"
+        },
+        {
             "id": 1,
             "airline": "Iberia",
             "from": "Madrid",
@@ -28,16 +38,6 @@
             "departure": "2025-11-13T15:45:00",
             "arrival": "2025-11-13T18:00:00",
             "details": "KL 1010 : Embraer 195 E2",
-            "group": "main"
-        },
-        {
-            "id": 4,
-            "airline": "PlusUltra Airlines",
-            "from": "Lima",
-            "to": "Madrid",
-            "departure": "2025-11-01T18:10:00",
-            "arrival": "2025-11-02T13:05:00",
-            "details": "PU 702 : Airbus A340-300",
             "group": "main"
         },
         {

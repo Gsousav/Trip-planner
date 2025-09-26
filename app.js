@@ -118,24 +118,27 @@ function formatDateTime(dateTimeStr) {
 function formatDateTimeShort(dateTimeStr) {
     if (!dateTimeStr) return 'No definido';
     const date = new Date(dateTimeStr);
-    
-    // Check if we're on mobile
-    const isMobile = window.innerWidth <= 768;
-    
+
+    // Better mobile detection
+    const isMobile = window.innerWidth <= 768 || /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
     if (isMobile) {
-        // More compact format for mobile
-        const day = date.toLocaleString('en-US', { day: 'numeric' });
-        const month = date.toLocaleString('en-US', { month: 'short' }).replace('.', '');
-        const time = date.toLocaleString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
-        return `${day} ${month} ${time}`; // Remove the colon to save space
+        // Example: "Jue 02 | 02:10"
+        const weekday = date.toLocaleString('es-PE', { weekday: 'short' }).replace('.', '');
+        const day = date.toLocaleString('es-PE', { day: '2-digit' });
+        const time = date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
+        return `${weekday} ${day} | ${time}`;
     } else {
-        // Original format for desktop
+        // Example: "Jue Nov: 02:10"
+        const weekday = date.toLocaleString('es-PE' , { weekday: 'short' }).replace('.', '');
         const day = date.toLocaleString('es-PE', { day: '2-digit' });
         const month = date.toLocaleString('es-PE', { month: 'short' }).replace('.', '');
         const time = date.toLocaleString('es-PE', { hour: '2-digit', minute: '2-digit', hour12: false });
         return `${day} ${month}: ${time}`;
     }
 }
+
+
 
 function formatDate(dateStr) {
     if (!dateStr) return 'No definido';

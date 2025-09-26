@@ -2293,7 +2293,7 @@ html {
     .fab-container {
         bottom: var(--bs-spacer-5);
         right: var(--bs-spacer-5);
-        z-index: 1003; /* Ensure it's above progress bar */
+        z-index: 1003;  
     }
     
     .fab {
@@ -2309,9 +2309,9 @@ html {
         transform: scale(1.05);
         box-shadow: 0 8px 24px rgba(103, 192, 144, 0.5);
         background: #26667F;
-    }
+    } 
     
-    .quick-actions {
+     .quick-actions {
         bottom: 96px;
         right: var(--bs-spacer-5);
     }
