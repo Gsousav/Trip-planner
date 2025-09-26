@@ -571,7 +571,6 @@ function createFlightCard(flight, isClickable = false) {
                     <span class="city">${flight.from}</span>
                     <span class="time">${formatDateTimeShort(flight.departure)}</span>
                 </div>
-                <span class="arrow">→</span>
                 <div class="arrive">
                     ${toFlag ? `<img class="tiny-flag" src="${toFlag}" alt="${toCc.toUpperCase()} flag" referrerpolicy="no-referrer" crossorigin="anonymous" />` : ''}
                     <span class="city">${flight.to}</span>
