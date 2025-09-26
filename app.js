@@ -218,7 +218,7 @@ function getCityFromFlight(flight) {
     const to = flight.to || '';
     const beforeParen = to.split('(')[0].trim();
     if (beforeParen.toLowerCase().includes('mallorca')) return 'Mallorca';
-    if (beforeParen.toLowerCase().includes('london')) return 'London';
+    if (beforeParen.toLowerCase().includes('london') || beforeParen.toLowerCase().includes('londres')) return 'London';
     if (beforeParen.toLowerCase().includes('amsterdam')) return 'Amsterdam';
     if (beforeParen.toLowerCase().includes('madrid')) return 'Madrid';
     return beforeParen || 'Itinerary';
@@ -922,7 +922,10 @@ function showAccommodationForCity(city, tripData) {
     showSection('accommodation');
     const hotelsList = document.getElementById('hotelsList');
     hotelsList.innerHTML = '';
-    const hotel = tripData.hotels.find(h => getCityForHotel(h) === city);
+    const hotel = tripData.hotels.find(
+     h => getCityForHotel(h).toLowerCase() === city.toLowerCase()
+    );
+
     if (hotel) {
         const hotelDiv = createHotelCard(hotel);
         hotelDiv.addEventListener('click', () => {

@@ -84,10 +84,10 @@
             "id": 3,
             "hotelName": "London Stay",
             "type": "Airbnb",
-            "address": "Harold Estate, Page's Walk 63, Gran Londres, Inglaterra SE1 4HW, Reino Unido",
+            "address": "Harold Estate, Page's Walk 63, Greater London, England SE1 4HW, United Kingdom",
             "checkin": "2025-11-08T15:00:00",
             "checkout": "2025-11-13T11:00:00",
-            "url": ""
+            "url": "https://www.airbnb.co.uk/trips/v1/reservation-details/ro/RESERVATION2_CHECKIN/HMDRTF4PAQ"
         },
         {
             "id": 4,
