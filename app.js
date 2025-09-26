@@ -86,7 +86,7 @@ function handleDataLoadError(error) {
     `;
     
     if (flightsList) flightsList.innerHTML = errorMessage;
-    if (hotelsList) hotelsList.innerHTML = errorMessage.replace('datos del viaje', 'alojamientos');
+    if (hotelsList) hotelsList.innerHTML = errorMessage.replace('datos del viaje', 'Telos');
     if (itineraryList) itineraryList.innerHTML = errorMessage.replace('datos del viaje', 'itinerario');
     
     console.error('Error crítico: No se pudieron cargar los datos');
@@ -930,7 +930,7 @@ function showAccommodationForCity(city, tripData) {
         });
         hotelsList.appendChild(hotelDiv);
     } else {
-        hotelsList.innerHTML = '<div class="empty-state"><h3>No se encontró alojamiento para esta ciudad</h3></div>';
+        hotelsList.innerHTML = '<div class="empty-state"><h3>No se encontró telo para esta ciudad</h3></div>';
     }
     addBackButton('accommodation', () => showSection('flights', 'left'), 'Volver a Vuelos');
     updateHash({ section: 'accommodation', city: slugifyCity(city) });
@@ -986,7 +986,7 @@ function showItineraryForCity(city, tripData) {
     } else {
         itineraryList.innerHTML = '<div class="empty-state"><h3>No se encontró itinerario para esta ciudad</h3></div>';
     }
-    addBackButton('itinerary', () => showAccommodationForCity(city, tripData), 'Volver al Alojamiento');
+    addBackButton('itinerary', () => showAccommodationForCity(city, tripData), 'Volver al Telo');
     updateHash({ section: 'itinerary', city: slugifyCity(city) });
     addHeaderContext('itinerary', city);
 }
@@ -1117,10 +1117,10 @@ function createFloatingActionButton() {
             <span>✈️</span> Vuelos
         </a>
         <a href="#" class="quick-action" data-section="accommodation">
-            <span>🏨</span> Alojamiento
+            <span>🏨</span> Telos
         </a>
         <a href="#" class="quick-action" data-section="itinerary">
-            <span>📅</span> Itinerario
+            <span>📅</span> Itinerarios
         </a>
     `;
     
@@ -1223,8 +1223,8 @@ function addHeaderContext(sectionId, city = '') {
     headerContext.className = 'header-context';
     
     const contextData = {
-        flights: { icon: '✈️', title: 'Tus Vuelos', desc: 'Selecciona un vuelo para ver el alojamiento' },
-        accommodation: { icon: '🏨', title: `Alojamiento${city ? ` en ${city}` : ''}`, desc: 'Haz clic para ver el itinerario detallado' },
+        flights: { icon: '✈️', title: 'Tus Vuelos', desc: 'Selecciona un vuelo para ver el telo' },
+        accommodation: { icon: '🏨', title: `Telo${city ? ` en ${city}` : ''}`, desc: 'Haz clic para ver el itinerario detallado' },
         itinerary: { icon: '📅', title: `Itinerario${city ? ` para ${city}` : ''}`, desc: 'Tus actividades detalladas día por día' }
     };
     
